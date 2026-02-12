@@ -1778,7 +1778,7 @@ html,body{background:#f2f2f2;font-family:"Trade Gothic",system-ui,sans-serif;-we
     ${(inv.payments || 0) > 0 ? '<div><span>Less Payments</span><span>'+fmt(inv.payments)+'</span></div>' : ''}
     <div class="killy-balance"><span>Balance Due</span><span>${fmt(inv.balanceDue != null ? inv.balanceDue : inv.total)}</span></div>
   </div>
-  <div class="killy-footer">${esc(inv.footerMessage || 'Thank you for choosing Killy Photography! Payment Due within 45 days of invoice date.')}</div>
+  ${inv.footerMessage ? `<div class="killy-footer">${esc(inv.footerMessage)}</div>` : ''}
 </div>
 ${printScript}
 </body>

@@ -939,13 +939,6 @@
 				gap: 8px;
 				margin-left: 12px;
 				align-items: center;
-				visibility: hidden;
-				opacity: 0;
-				transition: opacity 0.15s, visibility 0.15s;
-			}
-			.saved-list-item:hover .saved-list-item-actions {
-				visibility: visible;
-				opacity: 1;
 			}
 			.bulk-mode-active .saved-list-item-actions {
 				visibility: hidden !important;
@@ -960,6 +953,8 @@
 			.saved-list-item-actions .icon-btn svg {
 				width: 18px;
 				height: 18px;
+				display: block;
+				flex-shrink: 0;
 			}
 			.saved-view-toolbar {
 				display: flex;
@@ -1268,6 +1263,17 @@
 				gap: 10px;
 				margin-top: 64px;
 			}
+			.actions-primary {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+			.actions-icons {
+				margin-left: auto;
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
 			.actions .icon-btn {
 				flex-shrink: 0;
 			}
@@ -1324,7 +1330,7 @@
 					margin-top: 32px;
 					flex-wrap: wrap;
 				}
-				.actions > button:first-child {
+				.actions-primary {
 					width: 100%;
 					flex: none;
 				}
@@ -1611,19 +1617,35 @@
 					</div>
 					<div style="margin-top:12px">
 						<label class="label">Footer message</label>
-						<input id="f-footermsg" placeholder="Thank you for choosing Killy Photography! Payment Due within 45 days of invoice date." />
+						<input id="f-footermsg" placeholder="Optional footer message" />
 					</div>
 					<div class="actions">
-						<button id="btn-save">Save invoice</button>
-						<button type="button" id="btn-cancel" class="btn-cancel" style="display: none;">Done</button>
+						<div class="actions-primary">
+							<button id="btn-save">Save invoice</button>
+							<button type="button" id="btn-cancel" class="btn-cancel" style="display: none;">Done</button>
+						</div>
+						<div class="actions-icons">
 						<button class="icon-btn" id="btn-print">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
 							<span class="tooltip">Download PDF</span>
+						</button>
+						<button class="icon-btn" id="btn-edit-download" style="display: none;" aria-label="Download PDF">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+							<span class="tooltip">Download PDF</span>
+						</button>
+						<button class="icon-btn" id="btn-edit-new-from" style="display: none;" aria-label="New from this">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+							<span class="tooltip">New from this</span>
+						</button>
+						<button class="icon-btn btn-delete" id="btn-edit-delete" style="display: none;" aria-label="Delete">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+							<span class="tooltip">Delete</span>
 						</button>
 						<button class="icon-btn" id="btn-start-from-saved">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
 							<span class="tooltip">Start from saved</span>
 						</button>
+						</div>
 					</div>
 				</div>
 				<div class="grid-gripper" id="grid-gripper" role="separator" aria-label="Resize sidebar"></div>
@@ -2488,7 +2510,7 @@
 					total: 1353.13,
 					balanceDue: 1353.13,
 					payments: 0,
-					footerMessage: 'Thank you for choosing Killy Photography! Payment Due within 45 days of invoice date.',
+					footerMessage: '',
 					savedAt: '2025-10-20T12:00:00.000Z'
 				}/*
 				{
@@ -2747,6 +2769,12 @@
 				if (cancelBtn) cancelBtn.style.display = editing ? '' : 'none';
 				const printBtn = $('btn-print');
 				if (printBtn) printBtn.style.display = editing ? 'none' : '';
+				const editDownloadBtn = $('btn-edit-download');
+				if (editDownloadBtn) editDownloadBtn.style.display = editing ? '' : 'none';
+				const editNewFromBtn = $('btn-edit-new-from');
+				if (editNewFromBtn) editNewFromBtn.style.display = editing ? '' : 'none';
+				const editDeleteBtn = $('btn-edit-delete');
+				if (editDeleteBtn) editDeleteBtn.style.display = editing ? '' : 'none';
 				const startFromSavedBtn = $('btn-start-from-saved');
 				if (startFromSavedBtn) startFromSavedBtn.style.display = editing ? 'none' : '';
 				updateSaveButtonState();
@@ -2794,6 +2822,89 @@
 				window.scrollTo(0, 0);
 				requestAnimationFrame(() => { window.scrollTo(0, 0); });
 				setTimeout(() => { window.scrollTo(0, 0); }, 100);
+			});
+
+			// Edit page: Download PDF (when editing a saved invoice)
+			$('btn-edit-download').addEventListener('click', () => {
+				if (editingInvoiceId == null || !editingInvoice) return;
+				const data = getFormData();
+				const dateStr = (data.date || '').trim();
+				const year = dateStr ? new Date(dateStr).getFullYear() : new Date().getFullYear();
+				const inv = {
+					id: editingInvoiceId,
+					year,
+					invoiceNumber: (data.invoiceNumber || '').trim() || editingInvoice.invoiceNumber,
+					date: dateStr || editingInvoice.date,
+					client: data.client || editingInvoice.client,
+					clientJobId: data.clientJobId ?? editingInvoice.clientJobId,
+					clientPO: data.clientPO ?? editingInvoice.clientPO,
+					summary: data.summary ?? editingInvoice.summary,
+					taxId: data.taxId ?? editingInvoice.taxId,
+					description: data.description ?? editingInvoice.description,
+					lineItems: data.lineItems ?? editingInvoice.lineItems,
+					taxRate: data.taxRate ?? editingInvoice.taxRate,
+					subtotal: data.subtotal ?? editingInvoice.subtotal,
+					taxAmount: data.taxAmount ?? editingInvoice.taxAmount,
+					total: data.total ?? editingInvoice.total,
+					balanceDue: data.balanceDue ?? editingInvoice.balanceDue,
+					footerMessage: data.footerMessage ?? editingInvoice.footerMessage,
+					showLineItems: data.showLineItems !== false
+				};
+				downloadInvoicePDF(inv);
+			});
+
+			// Edit page: New from this (clone current invoice as new)
+			$('btn-edit-new-from').addEventListener('click', () => {
+				if (editingInvoiceId == null) return;
+				editingInvoiceId = null;
+				editingInvoice = null;
+				lastSavedFormSnapshot = null;
+				setSaveButtonLabel(false);
+				const data = getFormData();
+				const template = {
+					...data,
+					date: toISODate(todayMDY()),
+					invoiceNumber: ''
+				};
+				setFormData(template);
+				generateInvoiceNumber();
+				refreshPreviewFromForm();
+				showToast('New invoice started from template.');
+				const detailsEl = $('f-desc');
+				if (detailsEl) detailsEl.focus();
+			});
+
+			// Edit page: Delete this invoice
+			$('btn-edit-delete').addEventListener('click', () => {
+				if (editingInvoiceId == null || !editingInvoice) return;
+				if (!confirm(`Delete invoice "${editingInvoice.invoiceNumber}"?`)) return;
+				deleteInvoiceFromDB(editingInvoiceId).then(() => {
+					editingInvoiceId = null;
+					editingInvoice = null;
+					lastSavedFormSnapshot = null;
+					setSaveButtonLabel(false);
+					['f-name','f-contact','f-company','f-city','f-state','f-phone','f-inv','f-jobid','f-pono','f-summary','f-taxid','f-desc','f-taxrate','f-footermsg','f-totalfees'].forEach(id => {
+						const el = $(id);
+						if (el) el.value = '';
+					});
+					setLineItemsToForm([]);
+					$('f-date').value = todayMDY();
+					for (const [field, view] of bindings) {
+						const ph = placeholders[view];
+						setPreview(view, '', ph);
+					}
+					setPreview('p-name', '', placeholders['p-name']);
+					setPreview('p-inv', '', placeholders['p-inv']);
+					setPreview('p-date', '', placeholders['p-date']);
+					refreshPreviewFromForm();
+					generateInvoiceNumber();
+					showToast('Invoice deleted.');
+					switchTab('saved');
+					renderSavedList($('invoice-search') ? $('invoice-search').value : '');
+				}).catch(err => {
+					console.error(err);
+					showToast('Could not delete invoice.');
+				});
 			});
 
 			// Form changes: enable Update button only when there are pending changes
@@ -3467,7 +3578,7 @@ html,body{background:#f2f2f2;font-family:"Trade Gothic",system-ui,sans-serif;-we
     ${(inv.payments || 0) > 0 ? `<div><span>Less Payments</span><span>${fmt(inv.payments)}</span></div>` : ''}
     <div class="killy-balance"><span>Balance Due</span><span>${fmt(inv.balanceDue != null ? inv.balanceDue : inv.total)}</span></div>
   </div>
-  <div class="killy-footer">${esc(inv.footerMessage || 'Thank you for choosing Killy Photography! Payment Due within 45 days of invoice date.')}</div>
+  ${inv.footerMessage ? `<div class="killy-footer">${esc(inv.footerMessage)}</div>` : ''}
 </div>
 </body>
 </html>`;
