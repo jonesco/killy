@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>UI Reference - Killy Invoice System</title>
+	<style>
+		:root {
+			--blue: #e6f0ff;
+			--ink: #0b1220;
+			--muted: #5a6573;
+			--placeholder: #9ca3af;
+			--border: #d6dde6;
+			--brand: #1f4acc;
+			--accent: #ea580c;
+			--accent-hover: #c2410c;
+			--accent-light: #fb923c;
+			--accent-lighter: #fdba74;
+		}
+		@font-face {
+			font-family: "Trade Gothic";
+			src: url("Trade/Trade Gothic LT.ttf") format("truetype");
+			font-weight: 400;
+			font-style: normal;
+			font-display: swap;
+		}
+		@font-face {
+			font-family: "Trade Gothic";
+			src: url("Trade/Trade Gothic LT Oblique.ttf") format("truetype");
+			font-weight: 400;
+			font-style: italic;
+			font-display: swap;
+		}
+		@font-face {
+			font-family: "Trade Gothic";
+			src: url("Trade/Trade Gothic LT Light.ttf") format("truetype");
+			font-weight: 300;
+			font-style: normal;
+			font-display: swap;
+		}
+		@font-face {
+			font-family: "Trade Gothic";
+			src: url("Trade/Trade Gothic LT Bold.ttf") format("truetype");
+			font-weight: 700;
+			font-style: normal;
+			font-display: swap;
+		}
+		html { scrollbar-gutter: stable; }
+		html, body {
+			margin: 0;
+			padding: 0;
+			background: #f2f2f2 url('graybackground_optimized.jpg') no-repeat center center fixed;
+			background-size: cover;
+			color: #000;
+			font-family: "Trade Gothic", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		/* Reference page layout */
+		.ref-page {
+			max-width: 900px;
+			margin: 0 auto;
+			padding: 32px 20px 64px;
+			box-sizing: border-box;
+		}
+		.ref-page h1 {
+			margin: 0 0 8px 0;
+			font-size: 30px;
+			letter-spacing: -0.02em;
+		}
+		.ref-page .subtitle {
+			color: var(--muted);
+			font-size: 16px;
+			margin-bottom: 32px;
+		}
+		.ref-nav {
+			background: rgba(255, 255, 255, 0.35);
+			backdrop-filter: blur(12px);
+			-webkit-backdrop-filter: blur(12px);
+			border: 1px solid rgba(255, 255, 255, 0.55);
+			border-radius: 12px;
+			padding: 16px 20px;
+			margin-bottom: 40px;
+			box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+		}
+		.ref-nav ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 20px;
+		}
+		.ref-nav a {
+			color: var(--brand);
+			text-decoration: none;
+			font-size: 15px;
+		}
+		.ref-nav a:hover { text-decoration: underline; }
+		.ref-section {
+			background: rgba(255, 255, 255, 0.35);
+			backdrop-filter: blur(12px);
+			-webkit-backdrop-filter: blur(12px);
+			border: 1px solid rgba(255, 255, 255, 0.55);
+			border-radius: 12px;
+			padding: 24px;
+			margin-bottom: 24px;
+			box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+		}
+		.ref-section h2 {
+			margin: 0 0 8px 0;
+			font-size: 20px;
+			color: var(--ink);
+			border-bottom: 1px solid var(--border);
+			padding-bottom: 8px;
+		}
+		.ref-section p {
+			margin: 0 0 16px 0;
+			font-size: 15px;
+			color: var(--muted);
+			line-height: 1.5;
+		}
+		.ref-section p:last-of-type { margin-bottom: 12px; }
+		.ref-code {
+			background: rgba(0,0,0,0.06);
+			border-radius: 8px;
+			padding: 10px 12px;
+			font-family: "SF Mono", Monaco, Inconsolata, monospace;
+			font-size: 13px;
+			margin-top: 8px;
+			overflow-x: auto;
+		}
+		.ref-swatch {
+			display: inline-block;
+			width: 64px;
+			height: 48px;
+			border-radius: 8px;
+			border: 1px solid rgba(0,0,0,0.1);
+			margin-right: 8px;
+			vertical-align: middle;
+		}
+
+		/* Colors (swatches only need inline style or class) */
+		.swatch-ink { background: var(--ink); }
+		.swatch-muted { background: var(--muted); }
+		.swatch-border { background: var(--border); }
+		.swatch-brand { background: var(--brand); }
+		.swatch-blue { background: var(--blue); }
+		.swatch-accent { background: var(--accent); }
+		.swatch-accent-hover { background: var(--accent-hover); }
+		.swatch-accent-light { background: var(--accent-light); }
+		.swatch-sidebar { background: #13183f; }
+		.swatch-white { background: #fff; border: 1px solid var(--border); }
+		.swatch-bg { background: #f2f2f2; }
+
+		/* Typography */
+		.type-light { font-weight: 300; }
+		.type-regular { font-weight: 400; }
+		.type-bold { font-weight: 700; }
+		.type-mono {
+			font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+			font-size: 15px;
+		}
+		.type-h1 { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 8px 0; }
+		.type-h2 { font-size: 23px; margin: 0 0 8px 0; }
+		.type-body { font-size: 15px; }
+		.type-small { font-size: 15px; color: var(--muted); }
+
+		/* Layout */
+		.container {
+			max-width: 1132px;
+			margin: 0 auto;
+			padding: 24px 16px 48px 16px;
+			box-sizing: border-box;
+		}
+		.grid {
+			display: grid;
+			grid-template-columns: 1fr 2fr;
+			gap: 20px;
+			align-items: stretch;
+		}
+		.card {
+			background: rgba(255, 255, 255, 0.35);
+			backdrop-filter: blur(12px);
+			-webkit-backdrop-filter: blur(12px);
+			border: 1px solid rgba(255, 255, 255, 0.55);
+			border-radius: 12px;
+			padding: 16px;
+			box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+		}
+		.row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 12px;
+		}
+
+		/* Buttons */
+		button.ref-btn {
+			border: none;
+			border-radius: 10px;
+			padding: 10px 14px;
+			font-size: 18px;
+			background: var(--accent);
+			color: #fff;
+			cursor: pointer;
+			transition: background 0.2s;
+			font-family: inherit;
+		}
+		button.ref-btn:hover { background: var(--accent-hover); }
+		button.ref-btn:disabled {
+			background: #9ca3af;
+			color: #fff;
+			cursor: not-allowed;
+			opacity: 0.9;
+		}
+		button.ref-btn.secondary {
+			background: #fff;
+			color: var(--ink);
+			border: 1px solid transparent;
+		}
+		button.ref-btn.secondary:hover {
+			background: #fff;
+			border-color: #d1d5db;
+		}
+		button.ref-btn.btn-cancel {
+			background: transparent;
+			color: var(--muted);
+			border: 1px solid var(--border);
+		}
+		button.ref-btn.btn-cancel:hover {
+			background: #f3f4f6;
+			color: var(--ink);
+		}
+		.icon-btn {
+			position: relative;
+			width: 42px;
+			height: 42px;
+			padding: 0;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 10px;
+			background: #fff;
+			color: var(--ink);
+			border: 1px solid transparent;
+			cursor: pointer;
+			transition: background 0.2s, border-color 0.2s;
+			font-family: inherit;
+		}
+		.icon-btn:hover {
+			background: #fff;
+			border-color: #d1d5db;
+		}
+		.icon-btn svg { width: 20px; height: 20px; }
+		.icon-btn .tooltip {
+			position: absolute;
+			bottom: calc(100% + 8px);
+			left: 50%;
+			transform: translateX(-50%);
+			background: var(--ink);
+			color: #fff;
+			padding: 6px 10px;
+			border-radius: 6px;
+			font-size: 15px;
+			white-space: nowrap;
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 0.2s, visibility 0.2s;
+			pointer-events: none;
+			z-index: 100;
+		}
+		.icon-btn .tooltip::after {
+			content: '';
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+			border: 5px solid transparent;
+			border-top-color: var(--ink);
+		}
+		.icon-btn:hover .tooltip {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		/* Form controls */
+		.label {
+			display: block;
+			font-size: 15px;
+			color: #000;
+			margin-bottom: 6px;
+		}
+		input.ref-input, textarea.ref-input {
+			width: 100%;
+			max-width: 320px;
+			border: 1px solid var(--border);
+			border-radius: 8px;
+			padding: 10px 12px;
+			font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+			font-size: 15px;
+			outline: none;
+			box-sizing: border-box;
+			color: #000;
+		}
+		input.ref-input::placeholder,
+		textarea.ref-input::placeholder { color: var(--placeholder); }
+		input.ref-input:focus,
+		textarea.ref-input:focus {
+			border-color: var(--accent);
+			box-shadow: 0 0 0 3px rgba(234,88,12,0.2);
+		}
+		.invoice-search-wrap {
+			position: relative;
+			display: inline-flex;
+			align-items: center;
+		}
+		.invoice-search-wrap .invoice-search-icon {
+			position: absolute;
+			left: 12px;
+			width: 16px;
+			height: 16px;
+			pointer-events: none;
+			color: var(--muted);
+		}
+		.invoice-search-wrap input {
+			width: 320px;
+			padding: 8px 12px 8px 36px;
+			border: 1px solid var(--border);
+			border-radius: 8px;
+			font-size: 16px;
+			font-family: inherit;
+			box-sizing: border-box;
+		}
+
+		/* Sidebar (sample strip) */
+		.sidebar-sample {
+			display: flex;
+			width: 280px;
+			background: #13183f;
+			border-right: 1px solid rgba(255,255,255,0.08);
+			border-radius: 12px;
+			overflow: hidden;
+		}
+		.sidebar-sample .sidebar-nav {
+			padding: 12px 8px;
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			width: 100%;
+		}
+		.sidebar-sample .sidebar-link {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			padding: 10px 12px;
+			border-radius: 8px;
+			color: rgba(255,255,255,0.75);
+			text-decoration: none;
+			font-weight: 500;
+			font-size: 18px;
+			transition: background 0.2s, color 0.2s;
+		}
+		.sidebar-sample .sidebar-link:hover {
+			background: rgba(255,255,255,0.08);
+			color: #fff;
+		}
+		.sidebar-sample .sidebar-link-active {
+			background: rgba(234, 88, 12, 0.2);
+			color: var(--accent-light);
+		}
+		.sidebar-sample .sidebar-link svg {
+			width: 22px;
+			height: 22px;
+			flex-shrink: 0;
+		}
+
+		/* Cards / list items */
+		.invoice-card-sample {
+			background: #fff;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+			padding: 20px;
+			border-radius: 8px;
+			max-width: 320px;
+			color: #111827;
+		}
+		.saved-item {
+			display: block;
+			width: 100%;
+			max-width: 320px;
+			text-align: left;
+			padding: 12px 14px;
+			margin-bottom: 6px;
+			border: 1px solid var(--border);
+			border-radius: 8px;
+			background: #fff;
+			cursor: pointer;
+			font-family: inherit;
+			font-size: 16px;
+			transition: border-color 0.2s, background 0.2s;
+			box-sizing: border-box;
+		}
+		.saved-item:hover {
+			border-color: var(--brand);
+			background: #f0f4ff;
+		}
+		.saved-item-inv { font-weight: 700; color: var(--ink); }
+		.saved-item-meta { font-size: 15px; color: var(--muted); margin-top: 4px; }
+		.saved-list-item {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 14px 16px;
+			margin-bottom: 8px;
+			border: 1px solid var(--border);
+			border-radius: 10px;
+			background: #fff;
+			box-sizing: border-box;
+			min-height: 52px;
+			max-width: 400px;
+			transition: border-color 0.2s, background 0.2s;
+		}
+		.saved-list-item:hover { background: #f9fafb; }
+		.saved-list-item-info { flex: 1; min-width: 0; }
+		.saved-list-item-inv {
+			font-weight: 700;
+			color: var(--ink);
+			font-size: 18px;
+		}
+		.saved-list-item-inv a {
+			color: var(--accent);
+			text-decoration: none;
+		}
+		.saved-list-item-inv a:hover {
+			color: var(--accent-hover);
+			text-decoration: underline;
+		}
+		.saved-list-item-meta {
+			font-size: 15px;
+			color: var(--muted);
+			margin-top: 4px;
+		}
+
+		/* Modals */
+		.modal-overlay-sample {
+			position: relative;
+			height: 200px;
+			background: rgba(0,0,0,0.4);
+			border-radius: 12px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.modal-box-sample {
+			background: #fff;
+			border-radius: 12px;
+			box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+			padding: 24px;
+			max-width: 360px;
+		}
+
+		/* Toast */
+		.toast-sample {
+			display: inline-block;
+			background: var(--ink);
+			color: #fff;
+			padding: 12px 20px;
+			border-radius: 10px;
+			font-size: 18px;
+		}
+		.toast-sample.show { opacity: 1; }
+
+		/* Responsive note */
+		@media (max-width: 768px) {
+			.ref-page { padding: 20px 12px 48px; }
+			.grid { grid-template-columns: 1fr; }
+		}
+	</style>
+</head>
+<body>
+	<div class="ref-page">
+		<h1>UI Reference</h1>
+		<p class="subtitle">Jonesco Invoices — patterns and styling for future development.</p>
+
+		<nav class="ref-nav" aria-label="Sections">
+			<ul>
+				<li><a href="#colors">Colors</a></li>
+				<li><a href="#typography">Typography</a></li>
+				<li><a href="#layout">Layout</a></li>
+				<li><a href="#buttons">Buttons</a></li>
+				<li><a href="#forms">Form controls</a></li>
+				<li><a href="#sidebar">Sidebar</a></li>
+				<li><a href="#cards">Cards & list items</a></li>
+				<li><a href="#modals">Modals</a></li>
+				<li><a href="#toast">Toast</a></li>
+				<li><a href="#responsive">Responsive</a></li>
+			</ul>
+		</nav>
+
+		<section id="colors" class="ref-section">
+			<h2>Colors</h2>
+			<p>CSS variables and key hex values. Use <code>var(--name)</code> in styles.</p>
+			<div>
+				<span class="ref-swatch swatch-ink" title="--ink"></span>
+				<code>--ink: #0b1220</code> — primary text
+			</div>
+			<div style="margin-top:8px">
+				<span class="ref-swatch swatch-muted" title="--muted"></span>
+				<code>--muted: #5a6573</code> — secondary text, placeholders
+			</div>
+			<div style="margin-top:8px">
+				<span class="ref-swatch swatch-border" title="--border"></span>
+				<code>--border: #d6dde6</code> — borders
+			</div>
+			<div style="margin-top:8px">
+				<span class="ref-swatch swatch-brand" title="--brand"></span>
+				<code>--brand: #1f4acc</code> — links, accents
+			</div>
+			<div style="margin-top:8px">
+				<span class="ref-swatch swatch-blue" title="--blue"></span>
+				<code>--blue: #e6f0ff</code> — light blue tint
+			</div>
+			<div style="margin-top:8px">
+				<span class="ref-swatch swatch-accent" title="accent"></span>
+				<code>--accent: #ea580c</code> — primary button, links, success
+			</div>
+			<div style="margin-top:8px">
+				<span class="ref-swatch swatch-accent-hover" title="accent-hover"></span>
+				<code>--accent-hover: #c2410c</code> — primary hover
+			</div>
+			<div style="margin-top:8px">
+				<span class="ref-swatch swatch-accent-light" title="accent-light"></span>
+				<code>--accent-light: #fb923c</code> — sidebar active
+			</div>
+			<div style="margin-top:8px">
+				<span class="ref-swatch swatch-sidebar" title="sidebar"></span>
+				<code>#13183f</code> — sidebar background
+			</div>
+			<div style="margin-top:8px">
+				<span class="ref-swatch swatch-white" title="white"></span>
+				<code>#fff</code> — cards, inputs, modal
+			</div>
+			<div style="margin-top:8px">
+				<span class="ref-swatch swatch-bg" title="page bg"></span>
+				<code>#f2f2f2</code> — page background (with bg image in app)
+			</div>
+		</section>
+
+		<section id="typography" class="ref-section">
+			<h2>Typography</h2>
+			<p>Trade Gothic (300, 400, 700). Body and inputs use the same font stack; inputs use a monospace stack.</p>
+			<div class="ref-code">font-family: "Trade Gothic", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;</div>
+			<p style="margin-top:12px">Weights:</p>
+			<p class="type-light">Light (300) — Trade Gothic Light</p>
+			<p class="type-regular">Regular (400) — Trade Gothic</p>
+			<p class="type-bold">Bold (700) — Trade Gothic Bold</p>
+			<p style="margin-top:12px">Sizes:</p>
+			<p class="type-h1">h1 — 30px, letter-spacing -0.02em</p>
+			<p class="type-h2">h2 — 23px</p>
+			<p class="type-body">Body — 15px default</p>
+			<p class="type-small">Small / muted — 15px, color var(--muted)</p>
+			<p class="type-mono" style="margin-top:8px">Inputs: SF Mono, Monaco, Inconsolata, Roboto Mono, Source Code Pro, Menlo, Consolas, DejaVu Sans Mono</p>
+		</section>
+
+		<section id="layout" class="ref-section">
+			<h2>Layout</h2>
+			<p><code>.container</code> — max-width 1132px, padding 24px 16px 48px. <code>.grid</code> — 1fr 2fr columns, gap 20px. <code>.card</code> — frosted glass, radius 12px, padding 16px. <code>.row</code> — two equal columns, gap 12px.</p>
+			<div class="grid" style="margin-top:12px">
+				<div class="card">
+					<strong>Column 1</strong> (1fr)
+				</div>
+				<div class="card">
+					<strong>Column 2</strong> (2fr)
+				</div>
+			</div>
+			<div class="ref-code">.container · .grid · .card · .row</div>
+		</section>
+
+		<section id="buttons" class="ref-section">
+			<h2>Buttons</h2>
+			<p>Primary (orange), secondary (white + border), disabled, cancel (muted border), icon button (42×42 with tooltip).</p>
+			<div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px">
+				<button type="button" class="ref-btn">Primary</button>
+				<button type="button" class="ref-btn secondary">Secondary</button>
+				<button type="button" class="ref-btn" disabled>Disabled</button>
+				<button type="button" class="ref-btn btn-cancel">Cancel / Done</button>
+				<button type="button" class="icon-btn" title="Download">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+					<span class="tooltip">Download PDF</span>
+				</button>
+			</div>
+			<div class="ref-code">button (default) · .secondary · :disabled · .btn-cancel · .icon-btn + .tooltip</div>
+		</section>
+
+		<section id="forms" class="ref-section">
+			<h2>Form controls</h2>
+			<p><code>.label</code> — block, 15px, margin-bottom 6px. Inputs: border var(--border), radius 8px, focus ring orange (var(--accent), box-shadow). Search: <code>.invoice-search-wrap</code> with icon.</p>
+			<label class="label" for="ref-name">Label</label>
+			<input id="ref-name" class="ref-input" type="text" placeholder="Placeholder text" />
+			<div style="margin-top:16px">
+				<label class="label" for="ref-search">Search (with icon)</label>
+				<div class="invoice-search-wrap">
+					<svg class="invoice-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+					<input id="ref-search" type="text" placeholder="Search invoices..." />
+				</div>
+			</div>
+			<div class="ref-code">.label · input / textarea (same styles) · .invoice-search-wrap · .invoice-search-icon</div>
+		</section>
+
+		<section id="sidebar" class="ref-section">
+			<h2>Sidebar</h2>
+			<p>Dark background <code>#13183f</code>, border <code>rgba(255,255,255,0.08)</code>. Links: <code>.sidebar-link</code>, active: <code>.sidebar-link-active</code> (orange tint). Width 280px; collapsed 56px.</p>
+			<div class="sidebar-sample">
+				<nav class="sidebar-nav">
+					<a href="#" class="sidebar-link">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+						<span>Invoices</span>
+					</a>
+					<a href="#" class="sidebar-link sidebar-link-active">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/></svg>
+						<span>Saved invoices</span>
+					</a>
+				</nav>
+			</div>
+			<div class="ref-code">.sidebar · .sidebar-nav · .sidebar-link · .sidebar-link-active</div>
+		</section>
+
+		<section id="cards" class="ref-section">
+			<h2>Cards & list items</h2>
+			<p>Invoice preview: white, shadow, padding 28px. Modal list: <code>.saved-item</code> (block, hover brand border). Saved list row: <code>.saved-list-item</code> with <code>.saved-list-item-inv</code> (link orange: Invoice# — Assignment Title) and <code>.saved-list-item-meta</code> (muted).</p>
+			<div class="invoice-card-sample" style="margin-bottom:16px">
+				<strong>Invoice card</strong> — white, shadow 0 0 10px rgba(0,0,0,0.15)
+			</div>
+			<button type="button" class="saved-item">
+				<span class="saved-item-inv">INV-001 — Corporate Headshots</span>
+				<span class="saved-item-meta">Client Name · Jan 2025</span>
+			</button>
+			<div class="saved-list-item" style="margin-top:8px">
+				<div class="saved-list-item-info">
+					<div class="saved-list-item-inv"><a href="#">INV-002 — TMC3 Investor Event</a></div>
+					<div class="saved-list-item-meta">Another Client · Feb 2025</div>
+				</div>
+			</div>
+			<div class="ref-code">.invoice (preview) · .saved-item · .saved-item-inv · .saved-item-meta · .saved-list-item · .saved-list-item-inv a</div>
+		</section>
+
+		<section id="modals" class="ref-section">
+			<h2>Modals</h2>
+			<p>Overlay: <code>position: fixed; inset: 0; background: rgba(0,0,0,0.4);</code> with flex center. Box: <code>.saved-modal</code> — white, border-radius 12px, box-shadow 0 10px 40px rgba(0,0,0,0.2).</p>
+			<div class="modal-overlay-sample">
+				<div class="modal-box-sample">
+					<strong>Modal content</strong> — max-width 480px in app, padding 20–24px.
+				</div>
+			</div>
+			<div class="ref-code">.saved-modal-overlay · .saved-modal</div>
+		</section>
+
+		<section id="toast" class="ref-section">
+			<h2>Toast</h2>
+			<p>Fixed bottom center, <code>var(--ink)</code> background, white text, padding 12px 20px, border-radius 10px. Toggle visibility with <code>.show</code>. z-index 9100.</p>
+			<div class="toast-sample">Toast message</div>
+			<div class="ref-code">.toast · .toast.show</div>
+		</section>
+
+		<section id="responsive" class="ref-section">
+			<h2>Responsive</h2>
+			<p>Breakpoint <code>768px</code>. Notable overrides: grid becomes single column; preview column hidden on mobile; container padding 24px 12px; card padding 12px; h1 25px; actions wrap, primary button full width.</p>
+			<div class="ref-code">@media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .grid > div:last-child { display: none; } }</div>
+		</section>
+	</div>
+</body>
+</html>

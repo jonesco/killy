@@ -1,0 +1,3540 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Invoices - Jonesco</title>
+		<style>
+			:root {
+				--blue: #e6f0ff;
+				--ink: #0b1220;
+				--muted: #5a6573;
+				--placeholder: #9ca3af;
+				--border: #d6dde6;
+				--brand: #1f4acc;
+				--accent: #ea580c;
+				--accent-hover: #c2410c;
+				--accent-light: #fb923c;
+				--accent-lighter: #fdba74;
+			}
+			/* Trade Gothic font family (from ./trade folder) */
+			@font-face {
+				font-family: "Trade Gothic";
+				src: url("Trade/Trade Gothic LT.ttf") format("truetype");
+				font-weight: 400;
+				font-style: normal;
+				font-display: swap;
+			}
+			@font-face {
+				font-family: "Trade Gothic";
+				src: url("Trade/Trade Gothic LT Oblique.ttf") format("truetype");
+				font-weight: 400;
+				font-style: italic;
+				font-display: swap;
+			}
+			@font-face {
+				font-family: "Trade Gothic";
+				src: url("Trade/Trade Gothic LT Light.ttf") format("truetype");
+				font-weight: 300;
+				font-style: normal;
+				font-display: swap;
+			}
+			@font-face {
+				font-family: "Trade Gothic";
+				src: url("Trade/Trade Gothic LT Light Oblique.ttf") format("truetype");
+				font-weight: 300;
+				font-style: italic;
+				font-display: swap;
+			}
+			@font-face {
+				font-family: "Trade Gothic";
+				src: url("Trade/Trade Gothic LT Bold.ttf") format("truetype");
+				font-weight: 700;
+				font-style: normal;
+				font-display: swap;
+			}
+			@font-face {
+				font-family: "Trade Gothic";
+				src: url("Trade/Trade Gothic LT Bold Oblique.ttf") format("truetype");
+				font-weight: 700;
+				font-style: italic;
+				font-display: swap;
+			}
+			html {
+				scrollbar-gutter: stable;
+			}
+			html, body {
+				margin: 0;
+				padding: 0;
+				background: #f2f2f2 url('graybackground_optimized.jpg') no-repeat center center fixed;
+				background-size: cover;
+				color: #000;
+				font-family: "Trade Gothic", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+				-webkit-font-smoothing: antialiased;
+			}
+			.container {
+				max-width: 1132px;
+				margin: 0 auto;
+				padding: 24px 16px 48px 16px;
+				box-sizing: border-box;
+			}
+			.container--full {
+				max-width: 1800px;
+				width: 100%;
+			}
+			h1 {
+				margin: 0 0 16px 0;
+				font-size: 30px;
+				letter-spacing: -0.02em;
+			}
+			.grid {
+				display: flex;
+				align-items: stretch;
+				gap: 0;
+			}
+			.grid .card.controls {
+				width: var(--sidebar-width, 33.33%);
+				min-width: 320px;
+				max-width: 80%;
+				flex-shrink: 0;
+			}
+			.grid-gripper {
+				width: 12px;
+				flex-shrink: 0;
+				cursor: col-resize;
+				background: transparent;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transition: background 0.15s;
+			}
+			body.resizing {
+				user-select: none;
+				cursor: col-resize;
+			}
+			.grid-gripper:hover,
+			.grid-gripper:active,
+			body.resizing .grid-gripper {
+				background: rgba(234, 88, 12, 0.15);
+			}
+			.grid-gripper::before {
+				content: '';
+				width: 4px;
+				height: 48px;
+				background: var(--border);
+				border-radius: 2px;
+				opacity: 0.6;
+			}
+			.grid-gripper:hover::before,
+			body.resizing .grid-gripper::before {
+				background: var(--accent);
+				opacity: 1;
+			}
+			.invoice-preview-wrap {
+				flex: 1;
+				min-width: 0;
+				overflow-x: auto;
+				overflow-y: visible;
+			}
+			.grid .invoice {
+				width: 100%;
+				min-width: 800px;
+				max-width: 1600px;
+				margin-left: 0;
+			}
+			.grid > .card.controls {
+				margin-right: 0;
+			}
+			.card {
+				background: rgba(255, 255, 255, 0.35);
+				backdrop-filter: blur(12px);
+				-webkit-backdrop-filter: blur(12px);
+				border: 1px solid rgba(255, 255, 255, 0.55);
+				border-radius: 12px;
+				padding: 16px;
+				box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+			}
+			.card.controls {
+				display: flex;
+				flex-direction: column;
+			}
+			.card.controls .details-section {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				min-height: 0;
+			}
+			.card.controls .details-section textarea {
+				flex: 1;
+				min-height: 120px;
+				resize: none;
+			}
+			.label {
+				display: block;
+				font-size: 15px;
+				color: #000;
+				margin-bottom: 6px;
+			}
+			input, textarea {
+				width: 100%;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				padding: 10px 12px;
+				font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+				font-size: 15px;
+				outline: none;
+				box-sizing: border-box;
+				color: #000;
+			}
+			input::placeholder, textarea::placeholder {
+				color: var(--placeholder);
+			}
+			input:focus, textarea:focus {
+				border-color: var(--accent);
+				box-shadow: 0 0 0 3px rgba(234,88,12,0.2);
+			}
+			.row {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 12px;
+			}
+			.row-3 {
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				gap: 12px;
+			}
+			button {
+				border: none;
+				border-radius: 10px;
+				padding: 10px 14px;
+				font-size: 18px;
+				background: var(--accent);
+				color: #fff;
+				cursor: pointer;
+				transition: background 0.2s;
+			}
+			button:hover {
+				background: var(--accent-hover);
+			}
+			button:disabled {
+				background: #9ca3af;
+				color: #fff;
+				cursor: not-allowed;
+				opacity: 0.9;
+			}
+			button:disabled:hover {
+				background: #9ca3af;
+			}
+			button.secondary {
+				background: #fff;
+				color: var(--ink);
+				border: 1px solid transparent;
+			}
+			button.secondary:hover {
+				background: #fff;
+				border-color: #d1d5db;
+			}
+
+			/* Invoice preview */
+			.invoice {
+				background: #fff;
+				border: none;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+				padding: 28px;
+				color: #111827;
+				max-width: 100%;
+				aspect-ratio: 8.5 / 11;
+				width: 100%;
+				display: flex;
+				flex-direction: column;
+				overflow-y: auto;
+				min-height: 0;
+				box-sizing: border-box;
+			}
+			.inv-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
+				margin-bottom: 70px;
+			}
+			.brand { display:flex; align-items:center; gap:10px; }
+			.brand img { display:block; height:83px; width:auto; max-width:509px; object-fit:contain; visibility: visible; }
+			.brand img[src=""] { display: none; }
+			.brand .fallback {
+				font-weight: 700;
+				font-size: 40px;
+				color: #0b1220;
+			}
+			.inv-meta {
+				text-align: right;
+				font-size: 16px;
+			}
+			.inv-number-row {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				justify-content: flex-end;
+			}
+			.inv-meta .big {
+				font-size: 20px;
+				font-weight: 700;
+			}
+			.inv-number-box {
+				border: 1px solid #000;
+				border-radius: 8px;
+				padding: 0 12px;
+				display: inline-flex;
+				align-items: center;
+				height: 36px;
+				box-sizing: border-box;
+			}
+			.inv-number-box .big {
+				color: var(--accent);
+			}
+			.section {
+				margin: 16px 0;
+			}
+			.small {
+				font-size: 15px;
+				color: var(--muted);
+			}
+			.section > .small:has(+ .client-info-container) {
+				font-size: 18px;
+			}
+			.placeholder {
+				color: var(--placeholder);
+			}
+			.client-info {
+				font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+				font-size: 15px;
+			}
+			.client-info-container {
+				border: 1px solid #111827;
+				border-radius: 8px;
+				padding: 12px;
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+			}
+			.section .small + .client-info-container {
+				margin-top: 8px;
+			}
+			.invoice-footer {
+				margin-top: auto;
+				padding-top: 4px;
+				text-align: right;
+				font-size: 13px;
+				color: var(--muted);
+			}
+			.blue-box {
+				background-color: #e6f3ff;
+				background-image: none;
+				padding: 42px;
+				min-height: 150px;
+				white-space: pre-wrap;
+				line-height: 1.4;
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				margin: 0;
+			}
+			/* Add space between the 'Details' label and blue area */
+			.section .small + .blue-box {
+				margin-top: 8px;
+			}
+			hr.sep {
+				border: 0;
+				border-top: 1px solid var(--border);
+				margin: 16px 0;
+			}
+			.line-items-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+			.line-items-table th, .line-items-table td { padding: 6px 8px; text-align: left; border: 1px solid var(--border); }
+			.line-items-table th { background: #f7f9fc; font-weight: 600; }
+			.line-items-table input { width: 100%; padding: 4px 6px; font-size: 13px; }
+			.line-items-table .col-each, .line-items-table .col-qty, .line-items-table .col-amt { width: 80px; }
+			.line-items-table .col-del { width: 36px; }
+			.btn-add-line { margin-top: 8px; padding: 6px 12px; font-size: 14px; background: var(--ink); color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+			.line-items-section { margin-top: 12px; }
+			.line-items-toggle-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				user-select: none;
+				padding: 4px 0;
+			}
+			.line-items-toggle-header .label { margin-bottom: 0; }
+			.line-items-toggle-switch {
+				position: relative;
+				width: 44px;
+				height: 24px;
+				background: var(--border);
+				border-radius: 12px;
+				cursor: pointer;
+				transition: background 0.2s;
+				flex-shrink: 0;
+			}
+			.line-items-toggle-switch::after {
+				content: '';
+				position: absolute;
+				top: 2px;
+				left: 2px;
+				width: 20px;
+				height: 20px;
+				background: #fff;
+				border-radius: 50%;
+				box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+				transition: transform 0.2s;
+			}
+			.line-items-section.show-line-items .line-items-toggle-switch {
+				background: var(--accent);
+			}
+			.line-items-section.show-line-items .line-items-toggle-switch::after {
+				transform: translateX(20px);
+			}
+			.line-items-content { margin-top: 8px; }
+			.line-items-section:not(.show-line-items) .line-items-content { display: none; }
+			.line-items-manual-total {
+				margin-top: 8px;
+				display: none;
+			}
+			.line-items-section:not(.show-line-items) .line-items-manual-total {
+				display: block;
+			}
+			.line-items-manual-total input {
+				width: 120px;
+			}
+
+			/* Killy invoice layout */
+			.killy-logo-row { margin-bottom: 20px; }
+			.killy-inv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+			.killy-client-block { font-size: 15px; }
+			.killy-client-name { font-weight: 700; font-size: 16px; }
+			.killy-client-line { margin-top: 2px; }
+			.killy-date { font-size: 15px; }
+			.killy-meta { font-size: 15px; margin-bottom: 12px; }
+			.killy-meta-opt { margin-top: 2px; }
+			.killy-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; }
+			.killy-assignment { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+			.killy-label { font-weight: 700; font-size: 15px; margin-top: 12px; }
+			.killy-jobdesc { white-space: pre-wrap; font-size: 14px; line-height: 1.5; margin-top: 4px; margin-bottom: 16px; }
+			.killy-lineitems { margin: 12px 0; }
+			.killy-items-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+			.killy-items-table th, .killy-items-table td { padding: 6px 10px; text-align: left; border: 1px solid #111; }
+			.killy-items-table th { background: #f5f5f5; font-weight: 600; }
+			.killy-total-fees { font-weight: 700; margin-top: 4px; }
+			.killy-totals { margin-top: 16px; font-size: 15px; }
+			.killy-totals > div { display: flex; justify-content: space-between; margin-top: 4px; }
+			.killy-balance { font-weight: 700; margin-top: 8px; }
+			.killy-footer { margin-top: auto; font-size: 13px; color: var(--muted); text-align: center; }
+
+			/* Password screen */
+			#password-screen {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: url('background_optimized.jpg') no-repeat center center;
+				background-size: cover;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				z-index: 9999;
+			}
+			#password-screen.hidden {
+				display: none;
+			}
+			.password-box {
+				background: white;
+				padding: 40px;
+				border-radius: 12px;
+				box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+				width: 100%;
+				max-width: 400px;
+			}
+			.password-box .password-logo {
+				display: block;
+				height: 52px;
+				width: auto;
+				max-width: 318px;
+				margin: 0 auto 8px auto;
+				object-fit: contain;
+			}
+			.password-box h2 {
+				margin-top: 0;
+				margin-bottom: 24px;
+				text-align: center;
+				color: #333;
+				font-size: 30px;
+			}
+			.password-box label {
+				display: block;
+				font-size: 15px;
+				color: #000;
+				margin-bottom: 6px;
+			}
+			.password-box input[type="password"] {
+				width: 100%;
+				padding: 10px 12px;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+				font-size: 15px;
+				box-sizing: border-box;
+				color: #000;
+			}
+			.password-box input[type="password"]::placeholder {
+				color: var(--placeholder);
+			}
+			.password-box input[type="password"]:focus {
+				border-color: var(--accent);
+				box-shadow: 0 0 0 3px rgba(234,88,12,0.2);
+				outline: none;
+			}
+			.password-box .error {
+				color: #e74c3c;
+				margin-top: 8px;
+				font-size: 18px;
+				display: none;
+			}
+			.password-box .error.show {
+				display: block;
+			}
+			.password-box button {
+				width: 100%;
+				padding: 12px;
+				margin-top: 20px;
+				background: var(--accent);
+				color: white;
+				border: none;
+				border-radius: 6px;
+				font-size: 20px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: background 0.2s;
+			}
+			.password-box button:hover {
+				background: var(--accent-hover);
+			}
+
+			.app-layout {
+				display: flex;
+				min-height: 100vh;
+			}
+			.sidebar {
+				width: 280px;
+				flex-shrink: 0;
+				background: #13183f;
+				border-right: 1px solid rgba(255,255,255,0.08);
+				display: flex;
+				flex-direction: column;
+				transition: width 0.2s ease;
+				overflow: hidden;
+			}
+			.sidebar.collapsed {
+				width: 56px;
+			}
+			.sidebar-header {
+				display: flex;
+				align-items: stretch;
+				min-height: 0;
+				height: 64.5px;
+				border-bottom: 1px solid rgba(255,255,255,0.08);
+			}
+			.sidebar-logo {
+				flex: 1;
+				min-width: 0;
+				display: flex;
+				align-items: center;
+				padding: 0 8px 0 16px;
+			}
+			.sidebar-logo-img {
+				height: 36px;
+				width: auto;
+				max-width: 100%;
+				object-fit: contain;
+			}
+			.sidebar-logo-fallback {
+				display: none;
+				font-size: 29px;
+				font-weight: 700;
+				color: #fff;
+				letter-spacing: -0.02em;
+			}
+			.sidebar.collapsed .sidebar-logo {
+				display: none;
+			}
+			.sidebar-toggle {
+				width: 56px;
+				flex-shrink: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border: none;
+				background: transparent;
+				cursor: pointer;
+				color: rgba(255,255,255,0.7);
+				border-left: 1px solid rgba(255,255,255,0.08);
+				transition: background 0.2s, color 0.2s;
+				border-radius: 0;
+			}
+			.sidebar-toggle:hover {
+				background: rgba(255,255,255,0.08);
+				color: #fff;
+				border-radius: 0;
+			}
+			.sidebar-toggle svg {
+				width: 20px;
+				height: 20px;
+				flex-shrink: 0;
+				transition: transform 0.2s;
+			}
+			.sidebar.collapsed .sidebar-toggle svg {
+				transform: rotate(180deg);
+			}
+			.sidebar.collapsed .sidebar-toggle,
+			.sidebar.collapsed .sidebar-toggle:hover {
+				border-radius: 0;
+			}
+			.sidebar-nav {
+				padding: 12px 8px;
+				display: flex;
+				flex-direction: column;
+				gap: 4px;
+			}
+			.sidebar.collapsed .sidebar-nav {
+				padding-left: 0;
+				padding-right: 0;
+			}
+			.sidebar-link {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding: 10px 12px;
+				border-radius: 8px;
+				color: rgba(255,255,255,0.75);
+				text-decoration: none;
+				font-weight: 500;
+				font-size: 18px;
+				white-space: nowrap;
+				transition: background 0.2s, color 0.2s;
+			}
+			.sidebar-link:hover {
+				background: rgba(255,255,255,0.08);
+				color: #fff;
+			}
+			.sidebar-link-active {
+				background: rgba(234, 88, 12, 0.2);
+				color: var(--accent-light);
+			}
+			.sidebar-link-active:hover {
+				background: rgba(234, 88, 12, 0.25);
+				color: var(--accent-lighter);
+			}
+			.sidebar-link svg {
+				width: 22px;
+				height: 22px;
+				flex-shrink: 0;
+			}
+			.sidebar.collapsed .sidebar-link span {
+				position: absolute;
+				width: 0;
+				height: 0;
+				opacity: 0;
+				overflow: hidden;
+				pointer-events: none;
+			}
+			.sidebar.collapsed .sidebar-link {
+				justify-content: center;
+				align-items: center;
+				width: 56px;
+				min-width: 56px;
+				padding: 10px 0;
+				box-sizing: border-box;
+				border-radius: 0;
+			}
+			.sidebar.collapsed .sidebar-link[title] {
+				position: relative;
+			}
+			#main-content.hidden {
+				display: none;
+			}
+			#main-content {
+				flex: 1;
+				min-width: 0;
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+				align-items: stretch;
+				justify-content: flex-start;
+			}
+			#main-content > .container {
+				padding: 24px 16px 48px 16px;
+			}
+			#tab-saved {
+				margin: 0;
+				padding: 0;
+			}
+
+			/* Saved invoices modal */
+			.saved-modal-overlay {
+				position: fixed;
+				inset: 0;
+				background: rgba(0,0,0,0.4);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 9000;
+			}
+			.saved-modal-overlay.hidden {
+				display: none;
+			}
+			.saved-modal {
+				background: #fff;
+				border-radius: 12px;
+				box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+				width: 100%;
+				max-width: 480px;
+				max-height: 80vh;
+				display: flex;
+				flex-direction: column;
+			}
+			.saved-modal h3 {
+				margin: 0;
+				padding: 20px 20px 12px;
+				font-size: 23px;
+				border-bottom: 1px solid var(--border);
+			}
+			.saved-modal-list {
+				overflow-y: auto;
+				padding: 12px 20px 20px;
+			}
+			.saved-year {
+				margin-bottom: 16px;
+			}
+			.saved-year:last-child {
+				margin-bottom: 0;
+			}
+			.saved-year-title {
+				font-size: 15px;
+				font-weight: 700;
+				color: var(--muted);
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				margin-bottom: 8px;
+				padding-left: 4px;
+			}
+			.saved-item {
+				display: block;
+				width: 100%;
+				text-align: left;
+				padding: 12px 14px;
+				margin-bottom: 6px;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				background: #fff;
+				cursor: pointer;
+				font-family: inherit;
+				font-size: 16px;
+				transition: border-color 0.2s, background 0.2s;
+			}
+			.saved-item:hover {
+				border-color: var(--brand);
+				background: #f0f4ff;
+			}
+			.saved-item-inv {
+				font-weight: 700;
+				color: var(--ink);
+			}
+			.saved-item-meta {
+				font-size: 15px;
+				color: var(--muted);
+				margin-top: 4px;
+			}
+			.saved-empty {
+				text-align: center;
+				color: var(--muted);
+				padding: 24px 16px;
+				font-size: 18px;
+			}
+			.saved-modal-close {
+				position: absolute;
+				top: 16px;
+				right: 16px;
+				background: none;
+				border: none;
+				font-size: 25px;
+				color: var(--muted);
+				cursor: pointer;
+				padding: 4px;
+				line-height: 1;
+			}
+			.saved-modal-close:hover {
+				background: #e5e7eb;
+				color: var(--ink);
+			}
+			.saved-modal .saved-modal-head {
+				position: relative;
+			}
+
+			/* Toast */
+			.toast {
+				position: fixed;
+				bottom: 24px;
+				left: 50%;
+				transform: translateX(-50%);
+				background: var(--ink);
+				color: #fff;
+				padding: 12px 20px;
+				border-radius: 10px;
+				font-size: 18px;
+				z-index: 9100;
+				opacity: 0;
+				visibility: hidden;
+				transition: opacity 0.2s, visibility 0.2s;
+			}
+			.toast.show {
+				opacity: 1;
+				visibility: visible;
+			}
+
+			/* Tab switcher */
+			.tab-switcher {
+				display: flex;
+				gap: 4px;
+				background: #fff;
+				padding: 4px;
+				border-radius: 10px;
+				margin-bottom: 20px;
+				width: fit-content;
+			}
+			.tab-btn {
+				padding: 10px 20px;
+				border: none;
+				border-radius: 8px;
+				background: transparent;
+				color: var(--muted);
+				font-size: 18px;
+				font-weight: 500;
+				cursor: pointer;
+				transition: all 0.2s;
+			}
+			.tab-btn:hover {
+				background: #d1d5db;
+				color: var(--ink);
+			}
+			.tab-btn.active {
+				background: #000;
+				color: #fff;
+				box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+			}
+			.tab-btn.active:hover {
+				background: #000;
+			}
+			.tab-content {
+				display: none;
+			}
+			.tab-content.active {
+				display: block;
+			}
+
+			/* Saved invoices list view (same as Dashboard) */
+			.saved-list-container {
+				background: rgba(255, 255, 255, 0.35);
+				backdrop-filter: blur(12px);
+				-webkit-backdrop-filter: blur(12px);
+				border: 1px solid rgba(255, 255, 255, 0.55);
+				border-radius: 12px;
+				padding: 20px;
+				margin: 0;
+				box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+			}
+			.saved-list-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				height: 35.5px;
+				margin-bottom: 16px;
+			}
+			.saved-list-header h2 {
+				margin: 0;
+				font-size: 23px;
+			}
+			.invoice-search-wrap {
+				position: relative;
+				display: inline-flex;
+				align-items: center;
+			}
+			.invoice-search-wrap .invoice-search-icon {
+				position: absolute;
+				left: 12px;
+				width: 16px;
+				height: 16px;
+				pointer-events: none;
+				color: var(--muted);
+			}
+			.invoice-search-wrap #invoice-search {
+				width: 320px;
+				padding: 8px 12px 8px 36px;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				font-size: 16px;
+			}
+			.saved-list-year {
+				margin-bottom: 24px;
+			}
+			.saved-list-year:last-child {
+				margin-bottom: 0;
+			}
+			.saved-list-year-title {
+				font-size: 16px;
+				font-weight: 700;
+				color: var(--muted);
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				margin-bottom: 12px;
+				padding-left: 4px;
+			}
+			.saved-list-item {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 14px 16px;
+				margin-bottom: 8px;
+				border: 1px solid var(--border);
+				border-radius: 10px;
+				background: #fff;
+				box-sizing: border-box;
+				min-height: 52px;
+				transition: border-color 0.2s, background 0.2s;
+			}
+			.saved-list-item:hover {
+				background: #f9fafb;
+			}
+			.saved-list-item-info {
+				flex: 1;
+				min-width: 0;
+			}
+			.saved-list-item-inv {
+				font-weight: 700;
+				color: var(--ink);
+				font-size: 18px;
+			}
+			.saved-list-item-inv a {
+				color: var(--accent);
+				text-decoration: none;
+				cursor: pointer;
+			}
+			.saved-list-item-inv a:hover {
+				color: var(--accent-hover);
+				text-decoration: underline;
+			}
+			.saved-list-item-meta {
+				font-size: 15px;
+				color: var(--muted);
+				margin-top: 4px;
+			}
+			.saved-list-item-actions {
+				display: flex;
+				gap: 8px;
+				margin-left: 12px;
+				align-items: center;
+				visibility: hidden;
+				opacity: 0;
+				transition: opacity 0.15s, visibility 0.15s;
+			}
+			.saved-list-item:hover .saved-list-item-actions {
+				visibility: visible;
+				opacity: 1;
+			}
+			.bulk-mode-active .saved-list-item-actions {
+				visibility: hidden !important;
+				pointer-events: none;
+			}
+			.saved-list-item-actions .icon-btn {
+				width: 36px;
+				height: 36px;
+				padding: 0;
+				flex-shrink: 0;
+			}
+			.saved-list-item-actions .icon-btn svg {
+				width: 18px;
+				height: 18px;
+			}
+			.saved-view-toolbar {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				margin-bottom: 16px;
+			}
+			.saved-view-toolbar .btn-cancel-back {
+				padding: 8px 16px;
+				background: transparent;
+				color: var(--muted);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				cursor: pointer;
+				font-size: 15px;
+			}
+			.saved-view-toolbar .btn-cancel-back:hover {
+				background: #f3f4f6;
+				color: var(--ink);
+			}
+			.saved-view-iframe-wrap {
+				background: #f3f4f6;
+				border-radius: 10px;
+				overflow: hidden;
+				min-height: 400px;
+			}
+			.saved-view-iframe-wrap iframe {
+				display: block;
+				width: 100%;
+				min-height: 80vh;
+				border: none;
+			}
+			.btn-delete {
+				background: #fff !important;
+				color: #dc2626 !important;
+				border: 1px solid transparent;
+			}
+			.btn-delete:hover {
+				background: #fff !important;
+				border-color: #d1d5db;
+			}
+			.saved-list-empty {
+				text-align: center;
+				color: var(--muted);
+				padding: 48px 20px;
+				font-size: 18px;
+			}
+
+			/* Bulk selection */
+			.bulk-checkbox {
+				width: 18px;
+				height: 18px;
+				min-width: 18px;
+				min-height: 18px;
+				margin-right: 12px;
+				cursor: pointer;
+				flex-shrink: 0;
+				appearance: none;
+				-webkit-appearance: none;
+				border: 2px solid #9ca3af;
+				border-radius: 4px;
+				background: #fff;
+				vertical-align: middle;
+				box-sizing: border-box;
+			}
+			.bulk-checkbox:checked {
+				background: #000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'%3E%3Cpath fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M1 5l3 3 7-7'/%3E%3C/svg%3E") center/10px 10px no-repeat;
+				border-color: #000;
+			}
+			.bulk-checkbox:indeterminate {
+				background: #000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' d='M2 6h8'/%3E%3C/svg%3E") center/10px 10px no-repeat;
+				border-color: #000;
+			}
+			.saved-list-item.selected {
+				box-shadow: 0 0 0 2px #000;
+				background: #fff;
+			}
+			.select-all-row {
+				display: flex;
+				align-items: center;
+				padding: 8px 4px;
+				margin-bottom: 12px;
+				font-size: 16px;
+				color: var(--ink);
+			}
+			.select-all-row label {
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+			}
+			.bulk-toolbar {
+				position: fixed;
+				bottom: 24px;
+				left: 50%;
+				transform: translateX(-50%);
+				background: var(--ink);
+				color: #fff;
+				padding: 12px 20px;
+				border-radius: 12px;
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+				z-index: 8000;
+			}
+			.bulk-toolbar.hidden {
+				display: none;
+			}
+			.bulk-toolbar-count {
+				font-size: 18px;
+				font-weight: 500;
+			}
+			.bulk-toolbar button {
+				padding: 8px 16px;
+				font-size: 16px;
+				border-radius: 8px;
+			}
+			.bulk-toolbar .btn-bulk-download {
+				background: var(--accent);
+			}
+			.bulk-toolbar .btn-bulk-download:hover {
+				background: var(--accent-hover);
+			}
+			.bulk-toolbar .btn-bulk-delete {
+				background: #fff;
+				color: #dc2626;
+			}
+			.bulk-toolbar .btn-bulk-delete:hover {
+				background: #f3f4f6;
+			}
+			.bulk-toolbar .btn-bulk-close {
+				background: transparent;
+				padding: 8px;
+				color: #9ca3af;
+			}
+			.bulk-toolbar .btn-bulk-close:hover {
+				color: #fff;
+				background: rgba(255,255,255,0.1);
+			}
+
+			/* Invoice preview modal */
+			.preview-modal-overlay {
+				position: fixed;
+				inset: 0;
+				background: rgba(0,0,0,0.5);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 9000;
+				padding: 20px;
+			}
+			.preview-modal-overlay.hidden {
+				display: none;
+			}
+			.preview-modal {
+				background: #f7f9fc;
+				border-radius: 12px;
+				box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+				width: 100%;
+				max-width: 700px;
+				max-height: 90vh;
+				display: flex;
+				flex-direction: column;
+				overflow: hidden;
+			}
+			.preview-modal-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 16px 20px;
+				background: #fff;
+				border-bottom: 1px solid var(--border);
+			}
+			.preview-modal-header h3 {
+				margin: 0;
+				font-size: 20px;
+			}
+			.preview-modal-close {
+				background: none;
+				border: none;
+				font-size: 30px;
+				color: var(--muted);
+				cursor: pointer;
+				padding: 4px;
+				line-height: 1;
+			}
+			.preview-modal-close:hover {
+				background: #e5e7eb;
+				color: var(--ink);
+			}
+			.preview-modal-body {
+				flex: 1;
+				overflow-y: auto;
+				padding: 20px;
+				display: flex;
+				justify-content: center;
+				align-items: flex-start;
+			}
+			.preview-modal-body .preview-scale-wrapper {
+				width: 8.5in;
+				flex-shrink: 0;
+				transform-origin: top center;
+			}
+			.preview-modal-body .invoice {
+				width: 8.5in;
+				min-height: 11in;
+				aspect-ratio: auto;
+				font-family: "Trade Gothic", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			}
+			.preview-modal-body .invoice .client-info {
+				font-family: "Trade Gothic", system-ui, -apple-system, sans-serif;
+			}
+			.preview-modal-body .invoice .brand .fallback {
+				font-weight: 700;
+				font-size: 40px;
+				color: #0b1220;
+			}
+			.preview-modal-footer {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				padding: 16px 0;
+				background: #fff;
+				border-top: 1px solid var(--border);
+				width: 100%;
+				box-sizing: border-box;
+			}
+			.preview-modal-footer .icon-btn {
+				flex-shrink: 0;
+			}
+			.preview-modal-footer #preview-download {
+				background: var(--accent);
+				color: #fff;
+				border-color: transparent;
+			}
+			.preview-modal-footer #preview-download:hover {
+				background: var(--accent-hover);
+				border-color: transparent;
+			}
+			.preview-modal-footer .preview-footer-link-delete {
+				color: #dc2626;
+			}
+			.preview-modal-footer .preview-footer-link-delete:hover {
+				color: #b91c1c;
+				border-color: rgba(220, 38, 38, 0.3);
+			}
+
+			/* Icon buttons with tooltips */
+			.icon-btn {
+				position: relative;
+				width: 42px;
+				height: 42px;
+				padding: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 10px;
+				background: #fff;
+				color: var(--ink);
+				border: 1px solid transparent;
+				cursor: pointer;
+				transition: background 0.2s, border-color 0.2s;
+			}
+			.icon-btn:hover {
+				background: #fff;
+				border-color: #d1d5db;
+			}
+			.icon-btn svg {
+				width: 20px;
+				height: 20px;
+			}
+			.icon-btn .tooltip {
+				position: absolute;
+				bottom: calc(100% + 8px);
+				left: 50%;
+				transform: translateX(-50%);
+				background: var(--ink);
+				color: #fff;
+				padding: 6px 10px;
+				border-radius: 6px;
+				font-size: 15px;
+				white-space: nowrap;
+				opacity: 0;
+				visibility: hidden;
+				transition: opacity 0.2s, visibility 0.2s;
+				pointer-events: none;
+				z-index: 100;
+			}
+			.icon-btn .tooltip::after {
+				content: '';
+				position: absolute;
+				top: 100%;
+				left: 50%;
+				transform: translateX(-50%);
+				border: 5px solid transparent;
+				border-top-color: var(--ink);
+			}
+			.icon-btn:hover .tooltip {
+				opacity: 1;
+				visibility: visible;
+			}
+			.actions {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				margin-top: 64px;
+			}
+			.actions .icon-btn {
+				flex-shrink: 0;
+			}
+			.actions .btn-cancel {
+				background: transparent;
+				color: var(--muted);
+				border: 1px solid var(--border);
+			}
+			.actions .btn-cancel:hover {
+				background: #f3f4f6;
+				color: var(--ink);
+			}
+
+			/* Responsive styles for mobile */
+			@media (max-width: 768px) {
+				.container {
+					margin: 0 auto;
+				}
+				#main-content > .container {
+					padding: 24px 12px 48px 12px;
+				}
+				.tab-switcher {
+					width: 100%;
+				}
+				.tab-btn {
+					flex: 1;
+					text-align: center;
+				}
+				.grid {
+					flex-direction: column;
+					gap: 16px;
+				}
+				.grid .card.controls {
+					width: 100%;
+					min-width: 0;
+					max-width: none;
+				}
+				.grid-gripper {
+					display: none; /* No resize on mobile */
+				}
+				.invoice-preview-wrap {
+					display: none; /* Hide preview on mobile */
+				}
+				.card {
+					padding: 12px;
+				}
+				.row-3 {
+					grid-template-columns: 1fr;
+				}
+				h1 {
+					font-size: 25px;
+				}
+				.actions {
+					margin-top: 32px;
+					flex-wrap: wrap;
+				}
+				.actions > button:first-child {
+					width: 100%;
+					flex: none;
+				}
+				.actions .icon-btn {
+					width: 42px;
+				}
+				.saved-list-item {
+					flex-wrap: nowrap;
+					padding: 10px 12px;
+					min-height: 48px;
+				}
+				.saved-list-item .bulk-checkbox {
+					flex-shrink: 0;
+					margin-right: 8px;
+				}
+				.saved-list-item-info {
+					flex: 1;
+					min-width: 0;
+				}
+				.saved-list-item-actions {
+					margin-left: 8px;
+					gap: 4px;
+					visibility: visible;
+					opacity: 1;
+				}
+				.bulk-mode-active .saved-list-item-actions {
+					visibility: hidden !important;
+					pointer-events: none;
+				}
+				.saved-list-item-actions .icon-btn {
+					width: 32px;
+					height: 32px;
+				}
+				.preview-modal-overlay {
+					padding: 10px;
+				}
+				.preview-modal {
+					max-height: 95vh;
+				}
+				.preview-modal-body {
+					padding: 10px;
+				}
+				.preview-modal-body .invoice {
+					font-size: 11px;
+					padding: 14px;
+				}
+				.bulk-toolbar {
+					left: 12px;
+					right: 12px;
+					transform: none;
+					display: grid;
+					grid-template-columns: 1fr 1fr;
+					grid-template-rows: auto auto;
+					gap: 12px 8px;
+				}
+				.bulk-toolbar-count {
+					grid-column: 1;
+					grid-row: 1;
+					align-self: center;
+				}
+				.bulk-toolbar .btn-bulk-close {
+					grid-column: 2;
+					grid-row: 1;
+					justify-self: end;
+				}
+				.bulk-toolbar .btn-bulk-download {
+					grid-column: 1;
+					grid-row: 2;
+					width: 100%;
+				}
+				.bulk-toolbar .btn-bulk-delete {
+					grid-column: 2;
+					grid-row: 2;
+					width: 100%;
+				}
+			}
+
+			/* Print styles */
+			@page {
+				size: Letter;
+				margin: 0;
+			}
+			@media print {
+				* {
+					-webkit-print-color-adjust: exact !important;
+					print-color-adjust: exact !important;
+					color-adjust: exact !important;
+				}
+				html, body {
+					width: 8.5in;
+					height: 11in;
+					margin: 0;
+					padding: 0;
+					overflow: hidden;
+				}
+				body {
+					background: #fff;
+				}
+				.sidebar,
+				.sidebar-toggle {
+					display: none !important;
+				}
+				.app-layout {
+					display: block !important;
+				}
+				#main-content {
+					background: none !important;
+					min-height: auto;
+					width: 100% !important;
+				}
+				h1 {
+					display: none !important;
+				}
+				.tab-switcher {
+					display: none !important;
+				}
+				#tab-saved {
+					display: none !important;
+				}
+				#tab-create {
+					display: block !important;
+				}
+				.grid, .card {
+					display: block !important;
+				}
+				.controls {
+					display: none !important;
+				}
+				.grid-gripper {
+					display: none !important;
+				}
+				.saved-modal-overlay,
+				.preview-modal-overlay,
+				.toast {
+					display: none !important;
+				}
+				.invoice-preview-wrap {
+					display: block !important;
+					overflow: visible !important;
+					width: 100% !important;
+				}
+				.container {
+					max-width: 100%;
+					margin: 0;
+					padding: 0;
+					width: 8.5in;
+					height: 11in;
+				}
+				.invoice {
+					display: flex !important;
+					flex-direction: column !important;
+					border: none;
+					box-shadow: none;
+					padding: 0.5in;
+					width: 8.5in;
+					height: 11in;
+					max-width: 8.5in;
+					max-height: 11in;
+					aspect-ratio: auto;
+					overflow: hidden;
+					page-break-after: avoid;
+					page-break-inside: avoid;
+					box-sizing: border-box;
+					transform: none;
+				}
+				.killy-inv-header, .killy-meta, .killy-title, .killy-assignment, .killy-jobdesc, .killy-lineitems, .killy-totals, .killy-footer {
+					page-break-inside: avoid;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="app-layout">
+			<nav class="sidebar" id="sidebar" aria-label="Main navigation">
+				<div class="sidebar-header">
+					<div class="sidebar-logo">
+						<img src="logos/killy-white.svg" alt="Killy" class="sidebar-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+						<span class="sidebar-logo-fallback">Killy</span>
+					</div>
+					<button type="button" class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+					</button>
+				</div>
+				<div class="sidebar-nav">
+					<a href="index.html" class="sidebar-link" data-title="Dashboard">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+						<span>Dashboard</span>
+					</a>
+					<a href="invoices.html?tab=create" class="sidebar-link" id="nav-new-invoice" data-title="Invoices">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+						<span>Invoices</span>
+					</a>
+					<a href="invoices.html?tab=saved" class="sidebar-link" id="nav-saved-invoices" data-title="Saved invoices">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/></svg>
+						<span>Saved invoices</span>
+					</a>
+				</div>
+			</nav>
+			<div id="main-content">
+		<div class="container container--full">
+			<div id="tab-create" class="tab-content active">
+			<div class="grid">
+				<div class="card controls">
+					<div class="row" style="margin-top:12px">
+						<div>
+							<label class="label">Date</label>
+							<input id="f-date" type="text" placeholder="MM-DD-YYYY" maxlength="10" />
+						</div>
+					</div>
+					<div class="row" style="margin-top:12px">
+						<div>
+							<label class="label">Client Name</label>
+							<input id="f-name" placeholder="e.g., Suraiya Lema" />
+						</div>
+						<div>
+							<label class="label">Client Title</label>
+							<input id="f-contact" placeholder="e.g., Chief Events Officer" />
+						</div>
+					</div>
+					<div style="margin-top:12px">
+						<label class="label">Company</label>
+						<input id="f-company" placeholder="e.g., The Events Hive" />
+					</div>
+					<div class="row-3" style="margin-top:12px">
+						<div>
+							<label class="label">City</label>
+							<input id="f-city" placeholder="e.g., Houston" />
+						</div>
+						<div>
+							<label class="label">State</label>
+							<input id="f-state" placeholder="e.g., TX" />
+						</div>
+						<div>
+							<label class="label">Client phone</label>
+							<input id="f-phone" placeholder="832-425-8300" />
+						</div>
+					</div>
+					<div class="row" style="margin-top:12px">
+						<div>
+							<label class="label">Invoice number</label>
+							<input id="f-inv" placeholder="e.g., 1096" />
+						</div>
+						<div>
+							<label class="label">Client Job ID</label>
+							<input id="f-jobid" placeholder="e.g., eventsHive_1032" />
+						</div>
+					</div>
+					<div style="margin-top:12px">
+						<label class="label">Client PO#</label>
+						<input id="f-pono" placeholder="e.g., eventsHive_TMC3" />
+					</div>
+					<div style="margin-top:12px">
+						<label class="label">Assignment Title</label>
+						<input id="f-summary" placeholder="e.g., TMC3 Investor Event" />
+					</div>
+					<div style="margin-top:12px">
+						<label class="label">Tax ID</label>
+						<input id="f-taxid" placeholder="e.g., 32052435057" />
+					</div>
+					<div class="details-section" style="margin-top:12px">
+						<label class="label">Job Description</label>
+						<textarea id="f-desc" placeholder="Describe the work..." rows="4"></textarea>
+					</div>
+					<div class="line-items-section show-line-items" id="line-items-section">
+						<div class="line-items-toggle-header">
+							<span class="label">Line Items</span>
+							<div class="line-items-toggle-switch" id="line-items-toggle" role="switch" aria-checked="true" tabindex="0"></div>
+						</div>
+						<div class="line-items-content" id="line-items-container">
+							<table class="line-items-table">
+								<thead><tr><th>Description</th><th>Each</th><th>Qty</th><th>Amount</th><th></th></tr></thead>
+								<tbody id="line-items-tbody"></tbody>
+							</table>
+							<button type="button" id="btn-add-line" class="btn-add-line">Add line</button>
+						</div>
+						<div class="line-items-manual-total">
+							<label class="label">Total fees</label>
+							<input id="f-totalfees" type="text" placeholder="0.00" inputmode="decimal" />
+						</div>
+					</div>
+					<div style="margin-top:12px">
+						<label class="label">Tax rate (%)</label>
+						<input id="f-taxrate" type="text" placeholder="8.25" style="width:80px" />
+					</div>
+					<div style="margin-top:12px">
+						<label class="label">Footer message</label>
+						<input id="f-footermsg" placeholder="Thank you for choosing Killy Photography! Payment Due within 45 days of invoice date." />
+					</div>
+					<div class="actions">
+						<button id="btn-save">Save invoice</button>
+						<button type="button" id="btn-cancel" class="btn-cancel" style="display: none;">Done</button>
+						<button class="icon-btn" id="btn-print">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+							<span class="tooltip">Download PDF</span>
+						</button>
+						<button class="icon-btn" id="btn-start-from-saved">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+							<span class="tooltip">Start from saved</span>
+						</button>
+					</div>
+				</div>
+				<div class="grid-gripper" id="grid-gripper" role="separator" aria-label="Resize sidebar"></div>
+				<div class="invoice-preview-wrap">
+				<div class="invoice" id="preview">
+					<div class="killy-logo-row">
+						<div class="brand">
+							<img id="logo" alt="Killy Photography logo" />
+							<div id="logo-fallback" class="fallback">KILLY PHOTOGRAPHY</div>
+						</div>
+					</div>
+					<div class="killy-inv-header">
+						<div class="killy-client-block">
+							<div id="p-name" class="killy-client-name placeholder"></div>
+							<div id="p-contact" class="killy-client-line placeholder"></div>
+							<div id="p-company" class="killy-client-line placeholder"></div>
+							<div id="p-citystate" class="killy-client-line placeholder"></div>
+							<div id="p-phone" class="killy-client-line placeholder"></div>
+						</div>
+						<div id="p-date" class="killy-date placeholder"></div>
+					</div>
+					<div class="killy-meta">
+						<div>Invoice No: <span id="p-inv" class="placeholder"></span></div>
+						<div id="p-jobid" class="killy-meta-opt"></div>
+						<div id="p-pono" class="killy-meta-opt"></div>
+					</div>
+					<div class="killy-title">ASSIGNMENT INVOICE</div>
+					<div id="p-summary" class="killy-assignment placeholder"></div>
+					<div id="p-taxid" class="killy-meta-opt"></div>
+					<div class="killy-label">Job Description:</div>
+					<div id="p-desc" class="killy-jobdesc placeholder"></div>
+					<div class="killy-lineitems" id="p-lineitems-wrap">
+						<table class="killy-items-table">
+							<thead><tr><th>Detail of Fees</th><th>Each</th><th>Qty</th><th>Amount</th></tr></thead>
+							<tbody id="p-lineitems-tbody"></tbody>
+						</table>
+						<div id="p-totalfees" class="killy-total-fees"></div>
+					</div>
+					<div class="killy-totals">
+						<div><span>Subtotal</span><span id="p-subtotal"></span></div>
+						<div id="p-taxrow"><span>Sales Tax</span><span id="p-taxamt"></span></div>
+						<div><span>Total</span><span id="p-total"></span></div>
+						<div id="p-paymentsrow"><span>Less Payments</span><span id="p-payments"></span></div>
+						<div class="killy-balance"><span>Balance Due</span><span id="p-balancedue"></span></div>
+					</div>
+					<div id="p-footermsg" class="killy-footer"></div>
+				</div>
+				</div>
+			</div>
+			</div>
+
+			<div id="tab-saved" class="tab-content">
+				<div class="saved-list-container">
+					<div class="saved-list-header">
+						<h2>Saved Invoices</h2>
+						<div class="invoice-search-wrap">
+							<svg class="invoice-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+							<input type="text" id="invoice-search" placeholder="Search invoices..." />
+						</div>
+					</div>
+					<div id="saved-list-content"></div>
+				</div>
+			</div>
+		</div>
+			</div>
+		</div>
+		<div id="preview-modal-overlay" class="preview-modal-overlay hidden">
+			<div class="preview-modal">
+				<div class="preview-modal-header">
+					<h3 id="preview-modal-title">Invoice Preview</h3>
+					<button type="button" class="preview-modal-close" id="preview-modal-close">&times;</button>
+				</div>
+				<div class="preview-modal-body">
+					<div class="invoice" id="preview-modal-invoice">
+						<div class="killy-logo-row">
+							<div class="brand">
+								<img id="preview-logo" alt="Killy Photography logo" />
+								<div id="preview-logo-fallback" class="fallback">KILLY PHOTOGRAPHY</div>
+							</div>
+						</div>
+						<div class="killy-inv-header">
+							<div class="killy-client-block">
+								<div id="preview-name" class="killy-client-name"></div>
+								<div id="preview-contact" class="killy-client-line"></div>
+								<div id="preview-company" class="killy-client-line"></div>
+								<div id="preview-citystate" class="killy-client-line"></div>
+								<div id="preview-phone" class="killy-client-line"></div>
+							</div>
+							<div id="preview-date" class="killy-date"></div>
+						</div>
+						<div class="killy-meta">
+							<div>Invoice No: <span id="preview-inv"></span></div>
+							<div id="preview-jobid" class="killy-meta-opt"></div>
+							<div id="preview-pono" class="killy-meta-opt"></div>
+						</div>
+						<div class="killy-title">ASSIGNMENT INVOICE</div>
+						<div id="preview-summary" class="killy-assignment"></div>
+						<div id="preview-taxid" class="killy-meta-opt"></div>
+						<div class="killy-label">Job Description:</div>
+						<div id="preview-desc" class="killy-jobdesc"></div>
+						<div class="killy-lineitems" id="preview-lineitems-wrap">
+							<table class="killy-items-table">
+								<thead><tr><th>Detail of Fees</th><th>Each</th><th>Qty</th><th>Amount</th></tr></thead>
+								<tbody id="preview-lineitems-tbody"></tbody>
+							</table>
+							<div id="preview-totalfees" class="killy-total-fees"></div>
+						</div>
+						<div class="killy-totals">
+							<div><span>Subtotal</span><span id="preview-subtotal"></span></div>
+							<div id="preview-taxrow"><span>Sales Tax</span><span id="preview-taxamt"></span></div>
+							<div><span>Total</span><span id="preview-total"></span></div>
+							<div id="preview-paymentsrow"><span>Less Payments</span><span id="preview-payments"></span></div>
+							<div class="killy-balance"><span>Balance Due</span><span id="preview-balancedue"></span></div>
+						</div>
+						<div id="preview-footermsg" class="killy-footer"></div>
+					</div>
+				</div>
+				<div class="preview-modal-footer">
+					<button type="button" class="icon-btn" id="preview-download" aria-label="Download PDF">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+						<span class="tooltip">Download PDF</span>
+					</button>
+					<button type="button" class="icon-btn preview-footer-link" id="preview-open-tab" aria-label="Open in new tab">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+						<span class="tooltip">Open in new tab</span>
+					</button>
+					<button type="button" class="icon-btn preview-footer-link" id="preview-edit" aria-label="Edit">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+						<span class="tooltip">Edit</span>
+					</button>
+					<button type="button" class="icon-btn preview-footer-link" id="preview-new-from" aria-label="New from this">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+						<span class="tooltip">New from this</span>
+					</button>
+					<button type="button" class="icon-btn preview-footer-link preview-footer-link-delete" id="preview-delete" aria-label="Delete">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+						<span class="tooltip">Delete</span>
+					</button>
+				</div>
+			</div>
+		</div>
+		<div id="saved-modal-overlay" class="saved-modal-overlay hidden">
+			<div class="saved-modal">
+				<div class="saved-modal-head">
+					<h3>Start from saved invoice</h3>
+					<button type="button" class="saved-modal-close" id="saved-modal-close" aria-label="Close">&times;</button>
+				</div>
+				<div class="saved-modal-list" id="saved-modal-list"></div>
+			</div>
+		</div>
+		<div id="toast" class="toast" role="status"></div>
+		<script src="api.js"></script>
+		<div id="bulk-toolbar" class="bulk-toolbar hidden">
+			<span class="bulk-toolbar-count"><span id="bulk-count">0</span> selected</span>
+			<button type="button" class="btn-bulk-download">Download</button>
+			<button type="button" class="btn-bulk-delete">Delete</button>
+			<button type="button" class="btn-bulk-close">&times;</button>
+		</div>
+		<script>
+			// Helpers
+			const $ = (id) => document.getElementById(id);
+
+			// Sidebar toggle (persist in localStorage)
+			(function initSidebar() {
+				const sidebar = $('sidebar');
+				const toggleBtn = $('sidebar-toggle');
+				const key = 'jonesco-sidebar-collapsed';
+				function updateSidebarTitles() {
+					if (!sidebar) return;
+					const collapsed = sidebar.classList.contains('collapsed');
+					sidebar.querySelectorAll('.sidebar-link[data-title]').forEach(link => {
+						if (collapsed) link.title = link.dataset.title || '';
+						else link.removeAttribute('title');
+					});
+				}
+				if (sidebar && toggleBtn) {
+					const collapsed = localStorage.getItem(key) === 'true';
+					if (collapsed) sidebar.classList.add('collapsed');
+					updateSidebarTitles();
+					toggleBtn.addEventListener('click', () => {
+						sidebar.classList.toggle('collapsed');
+						localStorage.setItem(key, sidebar.classList.contains('collapsed'));
+						updateSidebarTitles();
+					});
+				}
+			})();
+
+			// Resizable sidebar gripper
+			(function initGridGripper() {
+				const gripper = $('grid-gripper');
+				const grid = gripper?.closest('.grid');
+				const sidebar = grid?.querySelector('.card.controls');
+				const storageKey = 'killy-sidebar-width';
+				const MIN_PCT = 33.33;
+				const MAX_PCT = 80;
+
+				function setSidebarWidth(pct) {
+					const clamped = Math.max(MIN_PCT, Math.min(MAX_PCT, pct));
+					document.documentElement.style.setProperty('--sidebar-width', clamped + '%');
+					try { localStorage.setItem(storageKey, String(clamped)); } catch (_) {}
+				}
+
+				function loadSavedWidth() {
+					try {
+						const saved = localStorage.getItem(storageKey);
+						if (saved) setSidebarWidth(parseFloat(saved));
+					} catch (_) {}
+				}
+
+				if (gripper && grid && sidebar) {
+					loadSavedWidth();
+					gripper.addEventListener('mousedown', (e) => {
+						if (e.button !== 0) return;
+						e.preventDefault();
+						document.body.classList.add('resizing');
+						const startX = e.clientX;
+						const startWidth = sidebar.getBoundingClientRect().width;
+						const gridRect = grid.getBoundingClientRect();
+						const gridWidth = gridRect.width;
+
+						function onMove(e) {
+							const dx = e.clientX - startX;
+							const newWidthPx = startWidth + dx;
+							const pct = (newWidthPx / gridWidth) * 100;
+							setSidebarWidth(pct);
+						}
+						function onUp() {
+							document.removeEventListener('mousemove', onMove);
+							document.removeEventListener('mouseup', onUp);
+							document.body.classList.remove('resizing');
+						}
+						document.addEventListener('mousemove', onMove);
+						document.addEventListener('mouseup', onUp);
+					});
+				}
+			})();
+
+			// Bulk selection state
+			const selectedInvoices = new Set();
+			let allInvoicesCache = [];
+
+			function updateBulkToolbar() {
+				const toolbar = $('bulk-toolbar');
+				const countEl = $('bulk-count');
+				const listContainer = $('saved-list-content');
+				if (!toolbar || !countEl) return;
+
+				if (selectedInvoices.size > 0) {
+					countEl.textContent = selectedInvoices.size;
+					toolbar.classList.remove('hidden');
+					listContainer?.classList.add('bulk-mode-active');
+				} else {
+					toolbar.classList.add('hidden');
+					listContainer?.classList.remove('bulk-mode-active');
+				}
+
+				// Update select-all checkbox state
+				const selectAllCheckbox = $('select-all-checkbox');
+				if (selectAllCheckbox && allInvoicesCache.length > 0) {
+					selectAllCheckbox.checked = selectedInvoices.size === allInvoicesCache.length;
+					selectAllCheckbox.indeterminate = selectedInvoices.size > 0 && selectedInvoices.size < allInvoicesCache.length;
+				}
+			}
+
+			function clearSelection() {
+				selectedInvoices.clear();
+				document.querySelectorAll('.saved-list-item').forEach(item => {
+					item.classList.remove('selected');
+					const cb = item.querySelector('.bulk-checkbox');
+					if (cb) cb.checked = false;
+				});
+				const selectAllCheckbox = $('select-all-checkbox');
+				if (selectAllCheckbox) {
+					selectAllCheckbox.checked = false;
+					selectAllCheckbox.indeterminate = false;
+				}
+				updateBulkToolbar();
+			}
+			function setPreview(id, text, placeholderText) {
+				const el = $(id);
+				if (!el) {
+					console.warn('Element not found:', id);
+					return;
+				}
+				if (text && String(text).trim() !== '') {
+					el.textContent = text;
+					el.classList.remove('placeholder');
+				} else {
+					el.textContent = placeholderText;
+					el.classList.add('placeholder');
+				}
+			}
+			// Try load logo from common filenames
+			(function loadLogo() {
+				const candidates = ['logos/killy-black.svg'];
+				const img = $('logo');
+				const fallback = $('logo-fallback');
+				if (!img || !fallback) return;
+				
+				// Show fallback initially
+				fallback.style.display = 'block';
+				img.style.display = 'none';
+				
+				function tryNext(i) {
+					if (i >= candidates.length) {
+						// All failed, keep fallback visible
+						console.warn('Could not load logo from any of:', candidates);
+						return;
+					}
+					const src = candidates[i];
+					
+					// Simple approach: set src and use onload/onerror
+					img.onload = () => {
+						img.style.display = 'block';
+						fallback.style.display = 'none';
+					};
+					img.onerror = () => {
+						img.onload = null;
+						img.onerror = null;
+						tryNext(i + 1);
+					};
+					img.src = src;
+				}
+				tryNext(0);
+			})();
+			
+			// Preload background image to ensure it's cached
+			(function preloadBackground() {
+				const bgImg = new Image();
+				bgImg.src = 'background_optimized.jpg';
+				// CSS already has the background-image set, this just preloads it
+			})();
+			
+			// Initial placeholders in preview
+			const placeholders = {
+				'p-inv': '1096',
+				'p-name': 'Client Name',
+				'p-contact': 'Chief Events Officer',
+				'p-company': 'The Events Hive',
+				'p-citystate': 'Houston TX',
+				'p-phone': '832-425-8300',
+				'p-date': 'October 20, 2025',
+				'p-summary': 'TMC3 Investor Event',
+				'p-desc': 'Describe the work...'
+			};
+			for (const id in placeholders) {
+				const el = $(id);
+				if (el) setPreview(id, '', placeholders[id]);
+			}
+
+			// Line items
+			function addLineItemRow(tbody, data) {
+				const tr = document.createElement('tr');
+				tr.innerHTML = `<td><input type="text" class="li-desc" placeholder="Description" value="${(data && data.description || '').replace(/"/g,'&quot;')}" /></td><td><input type="text" class="li-each" placeholder="0.00" value="${(data && data.unitPrice != null ? data.unitPrice : '')}" /></td><td><input type="text" class="li-qty" placeholder="1" value="${(data && data.qty != null ? data.qty : '')}" /></td><td><input type="text" class="li-amt" placeholder="0.00" value="${(data && data.amount != null ? data.amount : '')}" readonly /></td><td class="col-del"><button type="button" class="btn-del-line" title="Remove">×</button></td>`;
+				const amtInput = tr.querySelector('.li-amt');
+				const eachInput = tr.querySelector('.li-each');
+				const qtyInput = tr.querySelector('.li-qty');
+				function updateAmount() {
+					const each = parseFloat(eachInput.value) || 0;
+					const qty = parseInt(qtyInput.value, 10) || 1;
+					amtInput.value = (each * qty).toFixed(2);
+					if (typeof refreshPreviewFromForm === 'function') refreshPreviewFromForm();
+				}
+				eachInput.addEventListener('input', updateAmount);
+				qtyInput.addEventListener('input', updateAmount);
+				tr.querySelector('.btn-del-line').addEventListener('click', () => { tr.remove(); if (typeof refreshPreviewFromForm === 'function') refreshPreviewFromForm(); });
+				tbody.appendChild(tr);
+				return tr;
+			}
+			function getLineItemsFromForm() {
+				const tbody = $('line-items-tbody');
+				if (!tbody) return [];
+				const rows = tbody.querySelectorAll('tr');
+				return Array.from(rows).map(tr => {
+					const desc = (tr.querySelector('.li-desc') || {}).value || '';
+					const each = parseFloat((tr.querySelector('.li-each') || {}).value) || 0;
+					const qty = parseInt((tr.querySelector('.li-qty') || {}).value, 10) || 1;
+					const amt = each * qty;
+					return { description: desc, unitPrice: each, qty, amount: amt };
+				}).filter(r => r.description || r.unitPrice);
+			}
+			function setLineItemsToForm(items) {
+				const tbody = $('line-items-tbody');
+				if (!tbody) return;
+				tbody.innerHTML = '';
+				if (items && items.length > 0) {
+					items.forEach(item => addLineItemRow(tbody, item));
+				} else {
+					addLineItemRow(tbody, {});
+				}
+			}
+			const lineItemsTbody = $('line-items-tbody');
+			if (lineItemsTbody) addLineItemRow(lineItemsTbody, {});
+			$('btn-add-line')?.addEventListener('click', () => {
+				const tbody = $('line-items-tbody');
+				if (tbody) addLineItemRow(tbody, {});
+			});
+			// Line items toggle (off = hidden on invoice, on = shown)
+			function getLineItemsEnabled() {
+				const section = $('line-items-section');
+				return section ? section.classList.contains('show-line-items') : true;
+			}
+			function setLineItemsEnabled(on) {
+				const section = $('line-items-section');
+				const toggle = $('line-items-toggle');
+				if (section) {
+					if (on) section.classList.add('show-line-items'); else section.classList.remove('show-line-items');
+				}
+				if (toggle) toggle.setAttribute('aria-checked', on ? 'true' : 'false');
+				refreshPreviewFromForm();
+			}
+			(function initLineItemsToggle() {
+				const section = $('line-items-section');
+				const toggle = $('line-items-toggle');
+				const key = 'killy-line-items-enabled';
+				if (section && toggle) {
+					const enabled = localStorage.getItem(key) !== 'false';
+					if (!enabled) section.classList.remove('show-line-items');
+					toggle.setAttribute('aria-checked', section.classList.contains('show-line-items') ? 'true' : 'false');
+					function handleToggle() {
+						const wasEnabled = section.classList.contains('show-line-items');
+						section.classList.toggle('show-line-items');
+						const enabled = section.classList.contains('show-line-items');
+						toggle.setAttribute('aria-checked', enabled ? 'true' : 'false');
+						localStorage.setItem(key, enabled);
+						// When switching to off, copy current subtotal from line items to manual total if empty
+						if (wasEnabled && !enabled) {
+							const totalFeesEl = $('f-totalfees');
+							if (totalFeesEl && (!totalFeesEl.value || totalFeesEl.value.trim() === '')) {
+								const lineItems = getLineItemsFromForm();
+								const sum = lineItems.reduce((s, r) => s + (r.amount || 0), 0);
+								if (sum > 0) totalFeesEl.value = String(sum);
+							}
+						}
+						refreshPreviewFromForm();
+					}
+					toggle.addEventListener('click', handleToggle);
+					toggle.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); handleToggle(); } });
+				}
+			})();
+
+			// Set default date to today in MM-DD-YYYY format
+			function todayMDY() {
+				const d = new Date();
+				const mm = String(d.getMonth() + 1).padStart(2, '0');
+				const dd = String(d.getDate()).padStart(2, '0');
+				const yyyy = d.getFullYear();
+				return `${mm}-${dd}-${yyyy}`;
+			}
+			// Format date string: handles MMDDYYYY, MM-DD-YYYY input
+			function formatDateInput(val) {
+				// Strip non-digits
+				const digits = val.replace(/\D/g, '').slice(0, 8);
+				let out = '';
+				if (digits.length > 0) out = digits.slice(0, 2);
+				if (digits.length > 2) out += '-' + digits.slice(2, 4);
+				if (digits.length > 4) out += '-' + digits.slice(4, 8);
+				return out;
+			}
+			// Convert MM-DD-YYYY to YYYY-MM-DD for storage
+			function toISODate(mdyStr) {
+				if (!mdyStr) return '';
+				const parts = mdyStr.split('-');
+				if (parts.length !== 3) return mdyStr;
+				return `${parts[2]}-${parts[0]}-${parts[1]}`;
+			}
+			// Convert YYYY-MM-DD to MM-DD-YYYY for display
+			function formatDateMDY(dateStr) {
+				if (!dateStr) return '';
+				const parts = dateStr.split('-');
+				if (parts.length !== 3) return dateStr;
+				// Check if it's already MM-DD-YYYY (year would be > 12)
+				if (parseInt(parts[0]) > 12) {
+					return `${parts[1]}-${parts[2]}-${parts[0]}`;
+				}
+				return dateStr;
+			}
+
+			function parseAmountFromDescription(desc) {
+				if (!desc || typeof desc !== 'string') return 0;
+				const totalDueMatch = desc.match(/(?:Total\s+Due|Total)\s*:?\s*[\s\n]*\$[\d,]+(?:\.\d{2})?/gi);
+				if (totalDueMatch && totalDueMatch.length > 0) {
+					const lastTotal = totalDueMatch[totalDueMatch.length - 1];
+					const amtStr = lastTotal.match(/\$[\d,]+(?:\.\d{2})?/);
+					if (amtStr) {
+						const num = parseFloat(amtStr[0].replace(/[\$,]/g, ''), 10);
+						if (!isNaN(num)) return num;
+					}
+				}
+				// "N items ... $X each" or "For sale at $X each" with quantity earlier (e.g. "12 Yokai... $8 each" → 96)
+				const eachMatch = desc.match(/^(\d+)\s+[\s\S]*?\$\s*([\d,]+(?:\.\d{2})?)\s*each/im);
+				if (eachMatch) {
+					const qty = parseInt(eachMatch[1], 10);
+					const unit = parseFloat(eachMatch[2].replace(/[,]/g, ''), 10);
+					if (!isNaN(qty) && !isNaN(unit)) return qty * unit;
+				}
+				const matches = desc.match(/\$[\d,]+(?:\.\d{2})?/g);
+				if (!matches || matches.length === 0) return 0;
+				const last = matches[matches.length - 1];
+				const num = parseFloat(last.replace(/[\$,]/g, ''), 10);
+				return isNaN(num) ? 0 : num;
+			}
+
+			function formatCurrency(n) {
+				return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
+			}
+
+			// Date field auto-format – use server default when available
+			const fDateEl = $('f-date');
+			if (fDateEl) {
+				fDateEl.value = todayMDY();
+				refreshPreviewFromForm();
+				KillyAPI.getDefaultDate().then((d) => {
+					if (d && fDateEl && /^\d{1,2}-\d{1,2}-\d{4}$/.test(d)) {
+						fDateEl.value = d;
+						refreshPreviewFromForm();
+					}
+				}).catch(() => {});
+				fDateEl.addEventListener('input', (e) => {
+					const t = e.target;
+					const cursorPos = t.selectionStart || 0;
+					const oldValue = t.value;
+					const formatted = formatDateInput(t.value);
+					t.value = formatted;
+					// Preserve cursor position
+					const digitsBeforeCursor = oldValue.substring(0, cursorPos).replace(/\D/g, '').length;
+					let newPos = 0;
+					let digitCount = 0;
+					for (let i = 0; i < formatted.length; i++) {
+						if (/\d/.test(formatted[i])) {
+							digitCount++;
+							if (digitCount >= digitsBeforeCursor) {
+								newPos = i + 1;
+								break;
+							}
+						}
+						newPos = i + 1;
+					}
+					requestAnimationFrame(() => {
+						t.setSelectionRange(newPos, newPos);
+					});
+					generateInvoiceNumber();
+					refreshPreviewFromForm();
+				});
+			}
+
+			// Generate abbreviation from client name (like NIKE -> NKE)
+			function generateAbbreviation(name) {
+				if (!name || !name.trim()) return '';
+				const clean = name.toUpperCase().replace(/[^A-Z]/g, '');
+				if (clean.length === 0) return '';
+				
+				// Take first letter, then consonants (skip vowels), up to 3-4 chars
+				const vowels = 'AEIOU';
+				let abbrev = clean[0]; // Always include first letter
+				
+				for (let i = 1; i < clean.length && abbrev.length < 4; i++) {
+					if (!vowels.includes(clean[i])) {
+						abbrev += clean[i];
+					}
+				}
+				
+				// If we don't have enough chars, add more letters
+				if (abbrev.length < 3) {
+					for (let i = 1; i < clean.length && abbrev.length < 3; i++) {
+						if (!abbrev.includes(clean[i])) {
+							abbrev += clean[i];
+						}
+					}
+				}
+				
+				return abbrev.slice(0, 4); // Max 4 chars
+			}
+
+			// Generate invoice number (Killy uses simple numbers - leave empty for manual entry)
+			function generateInvoiceNumber() {
+				// No auto-gen for Killy - user enters invoice number manually
+				const inv = ($('f-inv') && $('f-inv').value) || '';
+				setPreview('p-inv', inv, placeholders['p-inv']);
+			}
+
+			// Phone auto-format: 512-944-8513
+			function formatPhoneDigits(digits) {
+				const clean = String(digits || '').replace(/\D/g, '').slice(0, 10);
+				let out = '';
+				if (clean.length > 0) out = clean.slice(0, 3);
+				if (clean.length > 3) out += '-' + clean.slice(3, 6);
+				if (clean.length > 6) out += '-' + clean.slice(6, 10);
+				return out;
+			}
+			const fPhoneEl = $('f-phone');
+			const pPhoneEl = $('p-phone');
+			if (fPhoneEl && pPhoneEl) {
+				pPhoneEl.style.display = 'block';
+				fPhoneEl.addEventListener('input', (e) => {
+					const t = e.target;
+					const cursorPos = t.selectionStart || 0;
+					const oldValue = t.value;
+					const formatted = formatPhoneDigits(t.value);
+					
+					// Update the value
+					t.value = formatted;
+					
+					// Preserve cursor position after formatting
+					// Count how many digits were before the cursor
+					const digitsBeforeCursor = oldValue.substring(0, cursorPos).replace(/\D/g, '').length;
+					
+					// Find the new cursor position in the formatted string
+					let newPos = 0;
+					let digitCount = 0;
+					for (let i = 0; i < formatted.length; i++) {
+						if (/\d/.test(formatted[i])) {
+							digitCount++;
+							if (digitCount >= digitsBeforeCursor) {
+								newPos = i + 1;
+								break;
+							}
+						}
+						newPos = i + 1;
+					}
+					
+					// Restore cursor position
+					requestAnimationFrame(() => {
+						t.setSelectionRange(newPos, newPos);
+					});
+					
+					// Show/hide based on whether there's a value
+					if (formatted.trim()) {
+						pPhoneEl.style.display = 'block';
+						setPreview('p-phone', formatted, placeholders['p-phone']);
+					} else {
+						pPhoneEl.style.display = 'none';
+						setPreview('p-phone', '', placeholders['p-phone']);
+					}
+				});
+			}
+
+			// Auto-generate invoice number when client name or date changes
+			const fNameEl = $('f-name');
+			if (fNameEl) {
+				fNameEl.addEventListener('input', () => {
+					const val = $('f-name').value;
+					setPreview('p-name', val, placeholders['p-name']);
+					generateInvoiceNumber();
+				});
+			}
+			// Date input listener is now handled above with auto-formatting
+			// Allow manual editing of invoice number
+			const fInvEl = $('f-inv');
+			if (fInvEl) {
+				fInvEl.addEventListener('input', () => {
+					const val = $('f-inv').value;
+					setPreview('p-inv', val, placeholders['p-inv']);
+				});
+			}
+
+			// Bindings for Killy format - fields that need full refresh (line items, totals, jobid/pono/taxid)
+			['f-jobid','f-pono','f-taxid','f-taxrate','f-footermsg','f-totalfees'].forEach(id => {
+				const el = $(id);
+				if (el) el.addEventListener('input', refreshPreviewFromForm);
+			});
+			// Simple bindings (direct value copy)
+			const bindings = [
+				['f-summary','p-summary'],
+				['f-desc','p-desc'],
+				['f-contact','p-contact'],
+				['f-company','p-company'],
+			];
+			for (const [field, view] of bindings) {
+				const fieldEl = $(field);
+				if (fieldEl) {
+					fieldEl.addEventListener('input', () => {
+						const val = $(field).value;
+						setPreview(view, val, placeholders[view]);
+					});
+				}
+			}
+			// City + State -> p-citystate
+			['f-city', 'f-state'].forEach(id => {
+				const el = $(id);
+				if (el) el.addEventListener('input', () => {
+					const city = ($('f-city') && $('f-city').value.trim()) || '';
+					const state = ($('f-state') && $('f-state').value.trim()) || '';
+					const val = [city, state].filter(Boolean).join(', ');
+					setPreview('p-citystate', val, placeholders['p-citystate']);
+				});
+			});
+
+			// Form data ↔ saved invoice (Killy format)
+			function getFormData() {
+				const dateVal = ($('f-date') && $('f-date').value) || '';
+				const lineItems = getLineItemsFromForm();
+				const showLineItems = getLineItemsEnabled();
+				const subtotal = showLineItems
+					? lineItems.reduce((s, r) => s + (r.amount || 0), 0)
+					: (parseFloat(($('f-totalfees') && $('f-totalfees').value.replace(/[,$]/g, '')) || 0) || 0);
+				const taxRate = parseFloat(($('f-taxrate') && $('f-taxrate').value) || 0) || 0;
+				const taxAmount = subtotal * (taxRate / 100);
+				const total = subtotal + taxAmount;
+				return {
+					date: toISODate(dateVal),
+					invoiceNumber: ($('f-inv') && $('f-inv').value.trim()) || '',
+					showLineItems: getLineItemsEnabled(),
+					client: {
+						name: ($('f-name') && $('f-name').value.trim()) || '',
+						contact: ($('f-contact') && $('f-contact').value.trim()) || '',
+						company: ($('f-company') && $('f-company').value.trim()) || '',
+						cityState: (() => {
+							const city = ($('f-city') && $('f-city').value.trim()) || '';
+							const state = ($('f-state') && $('f-state').value.trim()) || '';
+							return [city, state].filter(Boolean).join(', ');
+						})(),
+						phone: ($('f-phone') && $('f-phone').value.trim()) || ''
+					},
+					clientJobId: ($('f-jobid') && $('f-jobid').value.trim()) || '',
+					clientPO: ($('f-pono') && $('f-pono').value.trim()) || '',
+					summary: ($('f-summary') && $('f-summary').value.trim()) || '',
+					taxId: ($('f-taxid') && $('f-taxid').value.trim()) || '',
+					description: ($('f-desc') && $('f-desc').value.trim()) || '',
+					lineItems,
+					taxRate,
+					subtotal,
+					taxAmount,
+					total,
+					balanceDue: total,
+					footerMessage: ($('f-footermsg') && $('f-footermsg').value.trim()) || ''
+				};
+			}
+
+			function setFormData(data) {
+				if (!data) return;
+				const d = data.date ? formatDateMDY(data.date) : todayMDY();
+				if ($('f-date')) $('f-date').value = d;
+				if ($('f-name')) $('f-name').value = data.client?.name || '';
+				if ($('f-inv')) $('f-inv').value = data.invoiceNumber || '';
+				if ($('f-contact')) $('f-contact').value = data.client?.contact || '';
+				if ($('f-company')) $('f-company').value = data.client?.company || (data.client?.address || '').split('\n')[0] || '';
+				(() => {
+					const val = data.client?.cityState || (data.client?.address || '').split('\n').slice(1).join(', ') || '';
+					const parts = val.includes(', ') ? val.split(/,\s*/) : [val, ''];
+					if ($('f-city')) $('f-city').value = (parts[0] || '').trim();
+					if ($('f-state')) $('f-state').value = (parts[1] || '').trim();
+				})();
+				if ($('f-phone')) $('f-phone').value = data.client?.phone || '';
+				if ($('f-jobid')) $('f-jobid').value = data.clientJobId || '';
+				if ($('f-pono')) $('f-pono').value = data.clientPO || '';
+				if ($('f-summary')) $('f-summary').value = data.summary || '';
+				if ($('f-taxid')) $('f-taxid').value = data.taxId || '';
+				if ($('f-desc')) $('f-desc').value = data.description || '';
+				if ($('f-taxrate')) $('f-taxrate').value = data.taxRate != null ? data.taxRate : '';
+				if ($('f-footermsg')) $('f-footermsg').value = data.footerMessage || '';
+				if ($('f-totalfees')) $('f-totalfees').value = data.subtotal != null ? String(data.subtotal) : '';
+				setLineItemsToForm(data.lineItems);
+				setLineItemsEnabled(data.showLineItems !== false);
+				refreshPreviewFromForm();
+			}
+
+			function formatDateLong(iso) {
+				if (!iso) return '';
+				// Parse YYYY-MM-DD as local date to avoid timezone shift
+				const parts = String(iso).trim().split('-');
+				if (parts.length === 3) {
+					const y = parseInt(parts[0], 10);
+					const m = parseInt(parts[1], 10) - 1;
+					const d = parseInt(parts[2], 10);
+					if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+						const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+						return `${months[m]} ${d}, ${y}`;
+					}
+				}
+				const d = new Date(iso);
+				if (isNaN(d.getTime())) return iso;
+				const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+				return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+			}
+
+			function refreshPreviewFromForm() {
+				const data = getFormData();
+				setPreview('p-name', data.client?.name || '', placeholders['p-name']);
+				setPreview('p-contact', data.client?.contact || '', placeholders['p-contact']);
+				setPreview('p-company', data.client?.company || '', placeholders['p-company']);
+				setPreview('p-citystate', data.client?.cityState || '', placeholders['p-citystate']);
+				setPreview('p-phone', data.client?.phone || '', placeholders['p-phone']);
+				setPreview('p-date', formatDateLong(data.date), placeholders['p-date']);
+				setPreview('p-inv', data.invoiceNumber || '', placeholders['p-inv']);
+				const jobIdEl = $('p-jobid');
+				if (jobIdEl) jobIdEl.textContent = data.clientJobId ? `Client Job ID: ${data.clientJobId}` : '';
+				const ponoEl = $('p-pono');
+				if (ponoEl) ponoEl.textContent = data.clientPO ? `Client PO#: ${data.clientPO}` : '';
+				const taxIdEl = $('p-taxid');
+				if (taxIdEl) taxIdEl.textContent = data.taxId ? `Tax ID: ${data.taxId}` : '';
+				setPreview('p-summary', data.summary || '', placeholders['p-summary']);
+				setPreview('p-desc', data.description || '', placeholders['p-desc']);
+				setPreview('p-footermsg', data.footerMessage || '', '');
+				// Line items
+				const tbody = $('p-lineitems-tbody');
+				if (tbody) {
+					tbody.innerHTML = '';
+					(data.lineItems || []).forEach(item => {
+						const tr = document.createElement('tr');
+						tr.innerHTML = `<td>${(item.description || '').replace(/</g,'&lt;')}</td><td>${formatCurrency(item.unitPrice || 0)}</td><td>${item.qty || 1}</td><td>${formatCurrency(item.amount || 0)}</td>`;
+						tbody.appendChild(tr);
+					});
+				}
+				const lineItemsWrap = $('p-lineitems-wrap');
+				if (lineItemsWrap) lineItemsWrap.style.display = data.showLineItems !== false ? '' : 'none';
+				const totalFeesEl = $('p-totalfees');
+				if (totalFeesEl) totalFeesEl.textContent = data.subtotal != null ? `${formatCurrency(data.subtotal)} TOTAL FEES` : '';
+				const subtotalEl = $('p-subtotal');
+				if (subtotalEl) subtotalEl.textContent = data.subtotal != null ? formatCurrency(data.subtotal) : '';
+				const taxRow = $('p-taxrow');
+				if (taxRow) {
+					taxRow.style.display = data.taxRate ? 'flex' : 'none';
+					const taxAmtEl = $('p-taxamt');
+					if (taxAmtEl) taxAmtEl.textContent = data.taxAmount != null ? formatCurrency(data.taxAmount) : '';
+					const taxLabel = taxRow.querySelector('span:first-child');
+					if (taxLabel) taxLabel.textContent = data.taxRate ? `Sales Tax (${data.taxRate}%)` : 'Sales Tax';
+				}
+				const totalEl = $('p-total');
+				if (totalEl) totalEl.textContent = data.total != null ? formatCurrency(data.total) : '';
+				const paymentsRow = $('p-paymentsrow');
+				if (paymentsRow) paymentsRow.style.display = (data.payments || 0) > 0 ? 'flex' : 'none';
+				const paymentsEl = $('p-payments');
+				if (paymentsEl) paymentsEl.textContent = data.payments ? formatCurrency(data.payments) : '';
+				const balanceEl = $('p-balancedue');
+				if (balanceEl) balanceEl.textContent = data.balanceDue != null ? formatCurrency(data.balanceDue) : formatCurrency(data.total || 0);
+			}
+
+			function formatCurrency(n) {
+				return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(n || 0);
+			}
+
+			// Storage: KillyAPI (server-first, IndexedDB fallback) loaded from api.js
+
+			// Seed invoices – Killy example invoice
+			const SEED_INVOICES = [
+				{
+					id: 'seed-eventshive-1032',
+					year: 2025,
+					invoiceNumber: '1096',
+					date: '2025-10-20',
+					client: {
+						name: 'Suraiya Lema',
+						contact: 'Chief Events Officer',
+						company: 'The Events Hive',
+						cityState: 'Houston TX',
+						phone: '832-425-8300'
+					},
+					clientJobId: 'eventsHive_1032',
+					clientPO: 'eventsHive_TMC3',
+					summary: 'TMC3 Investor Event',
+					taxId: '32052435057',
+					description: 'Event Photography on Saturday, October 18th from 6-10 p.m. in the TMC3 Collaborative Building for a movie screening/red carpet/investor event for a maximum of 60 people.\n6 p.m. - 7 p.m. - Red carpet photography and print-on-site of up to 60 5x7 prints of boxer Termite Watkins.\n7 p.m. - 9:30 p.m. - Event photography of the reminder of the event activities.\nThis estimate includes post-production, 48-hour turnaround window, and a secure online gallery where you can access your photos for download. Additional fees (not included in this estimate) for immediate, same evening turnaround for social use.',
+					lineItems: [
+						{ description: 'Print on Site', unitPrice: 575, qty: 1, amount: 575 },
+						{ description: 'Event Photography - Corporate (1st 2 Hours)', unitPrice: 500, qty: 1, amount: 500 },
+						{ description: 'Event Photography - Additional Hours', unitPrice: 175, qty: 1, amount: 175 }
+					],
+					taxRate: 8.25,
+					subtotal: 1250,
+					taxAmount: 103.13,
+					total: 1353.13,
+					balanceDue: 1353.13,
+					payments: 0,
+					footerMessage: 'Thank you for choosing Killy Photography! Payment Due within 45 days of invoice date.',
+					savedAt: '2025-10-20T12:00:00.000Z'
+				}/*
+				{
+					id: 'seed-tvm-11-15-2025',
+					year: 2025,
+					invoiceNumber: 'TVM-11-15-2025',
+					date: '2025-11-15',
+					client: { name: 'Those Vending Machines', contact: 'Jeannine Schafer', address: '1104 E Liberty Ave.\nRound Rock, TX 79664', email: '', phone: '' },
+					summary: 'Delivered books for consignment.',
+					description: '12 Yokai Mini coloring books\n==================================\nFor sale at $8 each',
+					savedAt: '2025-11-15T12:00:00.000Z'
+				},
+				{
+					id: 'seed-thsv-11-27-2025',
+					year: 2025,
+					invoiceNumber: 'THSV-11-27-2025',
+					date: '2025-11-27',
+					client: { name: 'Those Vending Machines', contact: 'Jeannine Schafer', address: '1104 E Liberty Ave.\nRound Rock, TX 79664', email: 'thosevendingmachinesatx@gmail.com', phone: '' },
+					summary: 'Delivered books for consignment.',
+					description: '12 Yokai Mini coloring books\n==================================\nFor sale at $8 each',
+					savedAt: '2025-11-27T12:00:00.000Z'
+				},
+				{
+					id: 'seed-lpea-08-27-2025',
+					year: 2025,
+					invoiceNumber: 'LPEA-08-27-2025',
+					date: '2025-08-27',
+					client: { name: 'La Plata Electric Association', contact: 'Amanda Anderson', address: '', email: '', phone: '' },
+					summary: 'Research, Information Architecture, Visual Design Concepts, Revisions, Meeting/Consulting',
+					description: 'Conducted initial research, developed the site\'s information architecture, explored multiple visual design concepts, made revisions based on feedback, and participated in planning and consulting discussions.\n\nResearch: 6 hours\nInformation Architecture: 20 hours\nRevisions: 10 hours\nMeeting/Consulting Time: 4 hours\nVisual Design Concepts: 23 hours\n\nTotal Hours: 63\nHourly Rate: $75/hour\n\n--------------------------\nTotal Due:\n$4,725.00\n--------------------------',
+					savedAt: '2025-08-27T12:00:00.000Z'
+				},
+				{
+					id: 'seed-rxs-04-15-2024',
+					year: 2024,
+					invoiceNumber: 'RXS-04-15-2024',
+					date: '2024-04-15',
+					client: { name: 'RxSense', contact: 'Accounts Payable', address: '99 High Street Suite 2800\nBoston, MA 02110', email: '', phone: '' },
+					summary: 'Release notes delivery, Contact list maintenance, Prezi revisions',
+					description: 'Mar 25 - Mar 28\n\n16 Hours @ $50/hour\n\n--------------------------\nTotal Due:\n$800.00\n--------------------------',
+					savedAt: '2024-04-15T12:00:00.000Z'
+				},
+				{
+					id: 'seed-rxs-03-25-2024',
+					year: 2024,
+					invoiceNumber: 'RXS-03-25-2024',
+					date: '2024-03-25',
+					client: { name: 'RxSense', contact: 'Accounts Payable', address: '99 High Street Suite 2800\nBoston, MA 02110', email: '', phone: '' },
+					summary: 'Release notes delivery, Contact list maintenance, Prezi revisions',
+					description: 'Mar 11 - Mar 15\nMar 18 - Mar 22\n\n50 Hours @ $50/hour\n\n--------------------------\nTotal Due:\n$2,500.00\n--------------------------',
+					savedAt: '2024-03-25T12:00:00.000Z'
+				},
+				{
+					id: 'seed-rxs-03-08-2024',
+					year: 2024,
+					invoiceNumber: 'RXS-03-08-2024',
+					date: '2024-03-08',
+					client: { name: 'RxSense', contact: 'Accounts Payable', address: '99 High Street Suite 2800\nBoston, MA 02110', email: '', phone: '' },
+					summary: 'Release notes delivery, Contact list maintenance, Prezi revisions',
+					description: 'Feb 26 - Mar 1\nMar 4 - Mar 8\n\n50 Hours @ $50/hour\n\n--------------------------\nTotal Due:\n$2,500.00\n--------------------------',
+					savedAt: '2024-03-08T12:00:00.000Z'
+				},
+				{
+					id: 'seed-rxs-02-26-2024',
+					year: 2024,
+					invoiceNumber: 'RXS-02-26-2024',
+					date: '2024-02-26',
+					client: { name: 'RxSense', contact: 'Accounts Payable', address: '99 High Street Suite 2800\nBoston, MA 02110', email: '', phone: '' },
+					summary: 'CL+RxS training, Exhibit screenshot revisions, Release notes delivery, Contact list maintenance, Operations video production, Prezi revisions, Formulary one-sheet',
+					description: 'Feb 12 - Feb 16\nFeb 19 - Feb 23\n\n54 Hours @ $50/hour\n\n--------------------------\nTotal Due:\n$2,700.00\n--------------------------',
+					savedAt: '2024-02-26T12:00:00.000Z'
+				},
+				{
+					id: 'seed-rxs-02-12-2024',
+					year: 2024,
+					invoiceNumber: 'RXS-02-12-2024',
+					date: '2024-02-12',
+					client: { name: 'RxSense', contact: 'Accounts Payable', address: '99 High Street Suite 2800\nBoston, MA 02110', email: '', phone: '' },
+					summary: 'Training, Release Notes Delivery, Contact list maintenance, Operations video production',
+					description: 'Jan 29 - Feb 2\nFeb 5 - Feb 9\n\n53 Hours @ $50/hour\n\n--------------------------\nTotal Due:\n$2,650.00\n--------------------------',
+					savedAt: '2024-02-12T12:00:00.000Z'
+				},
+				{
+					id: 'seed-rxs-01-29-2024',
+					year: 2024,
+					invoiceNumber: 'RXS-01-29-2024',
+					date: '2024-01-29',
+					client: { name: 'RxSense', contact: 'Accounts Payable', address: '99 High Street Suite 2800\nBoston, MA 02110', email: '', phone: '' },
+					summary: 'Training, CRNs and RNs Delivery, RQID-1297 Client Satisfaction Survey, RQID-1298 ProAct Summit Presentation, RQID-1295 RxIQ BI Screenshot Update, Ops Storyboard, RxSense Master Prezi Updates',
+					description: 'Jan 15 - Jan 19\nJan 22 - Jan 26\n\n40 Hours @ $50/hour\n\n--------------------------\nTotal Due:\n$2,000.00\n--------------------------',
+					savedAt: '2024-01-29T12:00:00.000Z'
+				},
+				{
+					id: 'seed-amlb-07-06-2023',
+					year: 2023,
+					invoiceNumber: 'AMLB-07-06-2023',
+					date: '2023-07-06',
+					client: { name: 'Austin MLB', contact: 'Jason Gindele', address: '', email: '', phone: '' },
+					summary: 'Logo concepting and design for austinmlb.com. Delivered final logo.',
+					description: 'Flat Rate:\n$500.00\n\n--------------------------\nTotal Due:\n$500.00\n--------------------------',
+					savedAt: '2023-07-06T12:00:00.000Z'
+				},
+				{
+					id: 'seed-tcp-04-17-2023',
+					year: 2023,
+					invoiceNumber: 'TCP-04-17-2023',
+					date: '2023-04-17',
+					client: { name: 'Texas Capital Partners', contact: 'Danielle Jones', address: '2198 E. Camelback Rd.\nSuite 240\nPhoenix, AZ 85016', email: '', phone: '' },
+					summary: 'Logo concepting and design for Birdie Ranch and Bison Golf Club. B/W version of both logo selected. Updated: Color studies of both logos as well as final iterations and files.',
+					description: 'Hourly Rate:\n$75/hour\n\nHours Billed:\n36 hours\n\n--------------------------\nTotal Due:\n$2,700.00\n--------------------------',
+					savedAt: '2023-04-17T12:00:00.000Z'
+				},
+				{
+					id: 'seed-tcp-03-23-2023',
+					year: 2023,
+					invoiceNumber: 'TCP-03-23-2023',
+					date: '2023-03-23',
+					client: { name: 'Texas Capital Partners', contact: 'Danielle Jones', address: '2198 E. Camelback Rd.\nSuite 240\nPhoenix, AZ 85016', email: '', phone: '' },
+					summary: 'Logo concepting and design for Birdie Ranch and Bison Golf Club. B/W version of both logo selected.',
+					description: 'Hourly Rate:\n$75/hour\n\nHours Billed:\n28 hours\n\n--------------------------\nTotal Due:\n$2,100.00\n--------------------------',
+					savedAt: '2023-03-23T12:00:00.000Z'
+				},
+				{
+					id: 'seed-zva-12-05-2022',
+					year: 2022,
+					invoiceNumber: 'ZVA-12-05-2022',
+					date: '2022-12-05',
+					client: { name: 'Zona Verde Apartments', contact: 'Amy Rosenburg', address: '1201 E Drachman St,\nTucson, Arizona 85719', email: '', phone: '' },
+					summary: 'Logo design for renaming project',
+					description: 'Hourly Rate:\n$75/hour\n\nHours Billed:\n13 hours\n\n--------------------------\nTotal Due:\n$975.00\n--------------------------',
+					savedAt: '2022-12-05T12:00:00.000Z'
+				},
+				{
+					id: 'seed-jou-07-25-2021',
+					year: 2021,
+					invoiceNumber: 'JOU-07-25-2021',
+					date: '2021-07-25',
+					client: { name: 'Joule', contact: 'Axel Sigmar', address: '4601 Hudson Bend Rd. Ste 300\nAustin TX 78734', email: '', phone: '' },
+					summary: 'Logo and branding concepts for Joule. Includes initial concepting, several rounds of revision and final design of selected mark.',
+					description: 'Hourly Rate:\n$75/hour\n\nHours Billed:\n55 hours\n\n--------------------------\nTotal Due:\n$4,125.00\n--------------------------',
+					savedAt: '2021-07-25T12:00:00.000Z'
+				},
+				{
+					id: 'seed-mcp-08-17-2021',
+					year: 2021,
+					invoiceNumber: 'MCP-08-17-2021',
+					date: '2021-08-17',
+					client: { name: 'Mountain Capital Partners', contact: 'Amanda Anderson', address: '2615 Main Avenue\nDurango, CO 81301', email: '', phone: '' },
+					summary: 'Site architecture and UX exploration for Purgatory website including Research, Ideation, Content Organization, Navigation Concepting, Prototyping.',
+					description: 'Hourly Rate:\n$75/hour\n\nHours Billed:\n2 hours\n\n--------------------------\nTotal Due:\n$150.00\n--------------------------',
+					savedAt: '2021-08-17T12:00:00.000Z'
+				},
+				{
+					id: 'seed-mcp-03-11-2021',
+					year: 2021,
+					invoiceNumber: 'MCP-03-11-2021',
+					date: '2021-03-11',
+					client: { name: 'Mountain Capital Partners', contact: 'Amanda Anderson', address: '2615 Main Avenue\nDurango, CO 81301', email: '', phone: '' },
+					summary: 'Site architecture and UX exploration for Purgatory website.',
+					description: 'Hourly Rate:\n$75/hour\n\nHours Billed:\n20 hours\n\n--------------------------\nTotal Due:\n$1,500.00\n--------------------------',
+					savedAt: '2021-03-11T12:00:00.000Z'
+				},
+				{
+					id: 'seed-mcp-04-20-2020',
+					year: 2020,
+					invoiceNumber: 'MCP-04-20-2020',
+					date: '2020-04-20',
+					client: { name: 'Mountain Capital Partners', contact: 'Stacey Glaser', address: '2615 Main Avenue\nDurango, CO 81301', email: '', phone: '' },
+					summary: 'UX redesign of season pass ticketing system and communications.',
+					description: 'Hourly Rate:\n$75/hour\n\nHours Billed:\n20 hours\n\n--------------------------\nTotal Due:\n$1,500.00\n--------------------------',
+					savedAt: '2020-04-20T12:00:00.000Z'
+				}
+			*/];
+
+			async function seedInvoices() {
+				try {
+					const all = await KillyAPI.getAllInvoices();
+					const has = new Set(all.map(i => i.id));
+					for (const inv of SEED_INVOICES) {
+						if (!has.has(inv.id)) {
+							await KillyAPI.saveInvoice(inv);
+							has.add(inv.id);
+						}
+					}
+				} catch (e) {
+					console.warn('Seed failed:', e);
+				}
+			}
+			if (typeof KillyAPI !== 'undefined') seedInvoices();
+
+			function saveInvoiceToDB(inv) {
+				return KillyAPI.saveInvoice(inv);
+			}
+
+			function getAllInvoicesFromDB() {
+				return KillyAPI.getAllInvoices();
+			}
+
+			function showToast(msg, durationMs) {
+				const el = $('toast');
+				if (!el) return;
+				el.textContent = msg;
+				el.classList.add('show');
+				clearTimeout(showToast._t);
+				showToast._t = setTimeout(() => {
+					el.classList.remove('show');
+				}, durationMs ?? 2000);
+			}
+
+			let editingInvoiceId = null;
+			let editingInvoice = null;
+			let lastSavedFormSnapshot = null;
+
+			function formDataEqual(a, b) {
+				if (!a || !b) return !a && !b;
+				const pad = (s) => (s == null || s === undefined ? '' : String(s).trim());
+				const lineItemsEq = (x, y) => JSON.stringify(x || []) === JSON.stringify(y || []);
+				return pad(a.date) === pad(b.date) &&
+					pad(a.invoiceNumber) === pad(b.invoiceNumber) &&
+					pad(a.client?.name) === pad(b.client?.name) &&
+					pad(a.client?.contact) === pad(b.client?.contact) &&
+					pad(a.client?.company) === pad(b.client?.company) &&
+					pad(a.client?.cityState) === pad(b.client?.cityState) &&
+					pad(a.client?.phone) === pad(b.client?.phone) &&
+					pad(a.clientJobId) === pad(b.clientJobId) &&
+					pad(a.clientPO) === pad(b.clientPO) &&
+					pad(a.summary) === pad(b.summary) &&
+					pad(a.taxId) === pad(b.taxId) &&
+					pad(a.description) === pad(b.description) &&
+					lineItemsEq(a.lineItems, b.lineItems) &&
+					pad(a.taxRate) === pad(b.taxRate) &&
+					pad(a.footerMessage) === pad(b.footerMessage) &&
+					(a.showLineItems !== false) === (b.showLineItems !== false);
+			}
+
+			function hasPendingChanges() {
+				if (editingInvoiceId == null) return true;
+				if (lastSavedFormSnapshot == null) return true;
+				return !formDataEqual(getFormData(), lastSavedFormSnapshot);
+			}
+
+			function updateSaveButtonState() {
+				const btn = $('btn-save');
+				if (!btn) return;
+				if (editingInvoiceId == null) {
+					btn.disabled = false;
+					return;
+				}
+				btn.disabled = !hasPendingChanges();
+			}
+
+			function setSaveButtonLabel(editing) {
+				const btn = $('btn-save');
+				if (btn) btn.textContent = editing ? 'Save' : 'Save invoice';
+				const cancelBtn = $('btn-cancel');
+				if (cancelBtn) cancelBtn.style.display = editing ? '' : 'none';
+				const printBtn = $('btn-print');
+				if (printBtn) printBtn.style.display = editing ? 'none' : '';
+				const startFromSavedBtn = $('btn-start-from-saved');
+				if (startFromSavedBtn) startFromSavedBtn.style.display = editing ? 'none' : '';
+				updateSaveButtonState();
+			}
+
+			// Actions
+			$('btn-print').addEventListener('click', () => {
+				// Set document title to invoice number for PDF filename
+				const invoiceNumber = $('f-inv').value.trim() || $('p-inv').textContent.trim() || 'Invoice';
+				const originalTitle = document.title;
+				document.title = invoiceNumber;
+				
+				// Print
+				window.print();
+				
+				// Restore original title after a short delay
+				setTimeout(() => {
+					document.title = originalTitle;
+				}, 100);
+			});
+			$('btn-cancel').addEventListener('click', () => {
+				if (editingInvoiceId == null) return;
+				if (hasPendingChanges() && !confirm('Done? Your changes will not be saved.')) return;
+				editingInvoiceId = null;
+				editingInvoice = null;
+				lastSavedFormSnapshot = null;
+				setSaveButtonLabel(false);
+				['f-name','f-contact','f-company','f-city','f-state','f-phone','f-inv','f-jobid','f-pono','f-summary','f-taxid','f-desc','f-taxrate','f-footermsg','f-totalfees'].forEach(id => {
+					const el = $(id);
+					if (el) el.value = '';
+				});
+				setLineItemsToForm([]);
+				$('f-date').value = todayMDY();
+				for (const [field, view] of bindings) {
+					const ph = placeholders[view];
+					setPreview(view, '', ph);
+				}
+				setPreview('p-name', '', placeholders['p-name']);
+				setPreview('p-inv', '', placeholders['p-inv']);
+				setPreview('p-date', '', placeholders['p-date']);
+				refreshPreviewFromForm();
+				generateInvoiceNumber();
+				// Go back to Saved Invoices list
+				switchTab('saved');
+				window.scrollTo(0, 0);
+				requestAnimationFrame(() => { window.scrollTo(0, 0); });
+				setTimeout(() => { window.scrollTo(0, 0); }, 100);
+			});
+
+			// Form changes: enable Update button only when there are pending changes
+			['f-date','f-inv','f-name','f-contact','f-company','f-city','f-state','f-phone','f-jobid','f-pono','f-summary','f-taxid','f-desc','f-taxrate','f-footermsg','f-totalfees'].forEach(id => {
+				const el = $(id);
+				if (el) {
+					el.addEventListener('input', updateSaveButtonState);
+					el.addEventListener('change', updateSaveButtonState);
+				}
+			});
+
+			// Save invoice
+			$('btn-save').addEventListener('click', () => {
+				const data = getFormData();
+				if (!data.client?.name?.trim()) {
+					showToast('Enter a client name to save.');
+					return;
+				}
+				const invNum = (data.invoiceNumber || '').trim();
+				if (!invNum) {
+					showToast('Enter or generate an invoice number to save.');
+					return;
+				}
+				const dateStr = (data.date || '').trim();
+				const year = dateStr ? new Date(dateStr).getFullYear() : new Date().getFullYear();
+				const isUpdate = editingInvoiceId != null;
+				if (isUpdate && !confirm('Save changes to this invoice?')) return;
+				const saved = {
+					id: isUpdate ? editingInvoiceId : crypto.randomUUID(),
+					year,
+					invoiceNumber: invNum,
+					date: dateStr || toISODate(todayMDY()),
+					client: data.client || { name: '', contact: '', company: '', cityState: '', phone: '' },
+					clientJobId: data.clientJobId || '',
+					clientPO: data.clientPO || '',
+					summary: data.summary || '',
+					taxId: data.taxId || '',
+					description: data.description || '',
+					lineItems: data.lineItems || [],
+					taxRate: data.taxRate || 0,
+					subtotal: data.subtotal || 0,
+					taxAmount: data.taxAmount || 0,
+					total: data.total || 0,
+					balanceDue: data.balanceDue || data.total || 0,
+					footerMessage: data.footerMessage || '',
+					showLineItems: data.showLineItems !== false,
+					savedAt: isUpdate && editingInvoice && editingInvoice.savedAt ? editingInvoice.savedAt : new Date().toISOString()
+				};
+				saveInvoiceToDB(saved).then(() => {
+					if (isUpdate) {
+						editingInvoice = saved;
+						lastSavedFormSnapshot = getFormData();
+						updateSaveButtonState();
+						showToast('Invoice updated.');
+						renderSavedList($('invoice-search') ? $('invoice-search').value : '');
+					} else {
+						showToast('Invoice saved.');
+					}
+				}).catch((err) => {
+					console.error(err);
+					showToast(isUpdate ? 'Could not update invoice.' : 'Could not save invoice.');
+				});
+			});
+
+			// Start from saved – modal
+			const overlay = $('saved-modal-overlay');
+			const listEl = $('saved-modal-list');
+			const closeBtn = $('saved-modal-close');
+
+			function closeSavedModal() {
+				if (overlay) overlay.classList.add('hidden');
+			}
+
+			function openSavedModal() {
+				getAllInvoicesFromDB().then((all) => {
+					const byYear = {};
+					for (const inv of all) {
+						const y = inv.year || new Date(inv.date || inv.savedAt).getFullYear();
+						if (!byYear[y]) byYear[y] = [];
+						byYear[y].push(inv);
+					}
+					const years = Object.keys(byYear).map(Number).sort((a, b) => b - a);
+					if (years.length === 0) {
+						listEl.innerHTML = '<div class="saved-empty">No saved invoices yet. Create one and click “Save invoice”.</div>';
+					} else {
+						listEl.innerHTML = years.map((y) => {
+							const items = byYear[y].sort((a, b) => (b.savedAt || '').localeCompare(a.savedAt || ''));
+							return `<div class="saved-year" data-year="${y}">
+								<div class="saved-year-title">${y}</div>
+								${items.map((inv) => {
+									const meta = [inv.client?.name || '—', inv.date || ''].filter(Boolean).join(' · ');
+									return `<button type="button" class="saved-item" data-id="${inv.id}">
+										<span class="saved-item-inv">${((inv.invoiceNumber || '—') + (inv.summary ? ' — ' + inv.summary : '')).replace(/</g, '&lt;')}</span>
+										<div class="saved-item-meta">${(meta || '—').replace(/</g, '&lt;')}</div>
+									</button>`;
+								}).join('')}
+							</div>`;
+						}).join('');
+					}
+					listEl.querySelectorAll('.saved-item').forEach((btn) => {
+						btn.addEventListener('click', () => {
+							const id = btn.getAttribute('data-id');
+							const inv = all.find((i) => i.id === id);
+							if (!inv) return;
+							editingInvoiceId = null;
+							editingInvoice = null;
+							lastSavedFormSnapshot = null;
+							setSaveButtonLabel(false);
+							// Load as template: same client etc., but new date + new invoice number
+							const template = {
+								...inv,
+								date: todayMDY(),
+								invoiceNumber: ''
+							};
+							setFormData(template);
+							generateInvoiceNumber();
+							refreshPreviewFromForm();
+							closeSavedModal();
+							const detailsEl = $('f-desc');
+							if (detailsEl) detailsEl.focus();
+						});
+					});
+				}).catch((err) => {
+					console.error(err);
+					listEl.innerHTML = '<div class="saved-empty">Could not load saved invoices.</div>';
+				});
+				if (overlay) overlay.classList.remove('hidden');
+			}
+
+			if (closeBtn) closeBtn.addEventListener('click', closeSavedModal);
+			if (overlay) {
+				overlay.addEventListener('click', (e) => { if (e.target === overlay) closeSavedModal(); });
+				document.addEventListener('keydown', function onEsc(e) {
+					if (e.key === 'Escape' && overlay && !overlay.classList.contains('hidden')) {
+						closeSavedModal();
+					}
+				});
+			}
+			$('btn-start-from-saved').addEventListener('click', openSavedModal);
+
+			// Tab switching (driven by URL ?tab=create | ?tab=saved)
+			const tabContents = document.querySelectorAll('.tab-content');
+
+			function switchTab(tabName, options) {
+				const tab = tabName === 'saved' ? 'saved' : 'create';
+				const keepNavSaved = options && options.keepNavSaved === true;
+				tabContents.forEach(content => {
+					content.classList.toggle('active', content.id === `tab-${tab}`);
+				});
+				// Update sidebar active state (keep Saved selected when viewing/editing from saved list)
+				const navNew = $('nav-new-invoice');
+				const navSaved = $('nav-saved-invoices');
+				if (keepNavSaved && tab === 'create') {
+					if (navNew) navNew.classList.remove('sidebar-link-active');
+					if (navSaved) navSaved.classList.add('sidebar-link-active');
+				} else {
+					if (navNew) navNew.classList.toggle('sidebar-link-active', tab === 'create');
+					if (navSaved) navSaved.classList.toggle('sidebar-link-active', tab === 'saved');
+				}
+				if (tab === 'saved' && typeof renderSavedList === 'function') {
+					const searchVal = $('invoice-search') ? $('invoice-search').value : '';
+					renderSavedList(searchVal);
+				}
+			}
+
+			// Search invoices
+			const searchInput = $('invoice-search');
+			if (searchInput) {
+				searchInput.addEventListener('input', () => {
+					renderSavedList(searchInput.value);
+				});
+			}
+
+			// Render saved invoices list (must be defined before initial switchTab)
+			function renderSavedList(searchQuery) {
+				const listEl = $('saved-list-content');
+				if (!listEl) return;
+				const query = (searchQuery || '').toLowerCase().trim();
+
+				getAllInvoicesFromDB().then((rawAll) => {
+					// Filter by search query
+					const all = query ? rawAll.filter(inv => {
+						const searchable = [
+							inv.invoiceNumber,
+							inv.client?.name,
+							inv.client?.contact,
+							inv.client?.address,
+							inv.client?.email,
+							inv.client?.phone,
+							inv.summary,
+							inv.description,
+							inv.date
+						].filter(Boolean).join(' ').toLowerCase();
+						return searchable.includes(query);
+					}) : rawAll;
+					const byYear = {};
+					for (const inv of all) {
+						const y = inv.year || new Date(inv.date || inv.savedAt).getFullYear();
+						if (!byYear[y]) byYear[y] = [];
+						byYear[y].push(inv);
+					}
+					const years = Object.keys(byYear).map(Number).sort((a, b) => b - a);
+
+					// Cache all invoices for bulk operations
+					allInvoicesCache = all;
+
+					if (years.length === 0) {
+						if (query) {
+							listEl.innerHTML = '<div class="saved-list-empty">No invoices match your search.</div>';
+						} else {
+							listEl.innerHTML = '<div class="saved-list-empty">No saved invoices yet.<br>Create one and click "Save invoice" to see it here.</div>';
+						}
+						clearSelection();
+					} else {
+						// Add select-all row + invoice list
+						const selectAllRow = `<div class="select-all-row">
+							<label><input type="checkbox" id="select-all-checkbox" class="bulk-checkbox" /> Select All</label>
+						</div>`;
+
+						listEl.innerHTML = selectAllRow + years.map((y) => {
+							const items = byYear[y].sort((a, b) => (b.savedAt || '').localeCompare(a.savedAt || ''));
+							return `<div class="saved-list-year">
+								<div class="saved-list-year-title">${y}</div>
+								${items.map((inv) => {
+									const clientName = inv.client?.name || '—';
+									const dateFormatted = inv.date ? formatDateMDY(inv.date) : '—';
+									const revenue = inv.balanceDue != null ? inv.balanceDue : (inv.total != null ? inv.total : 0);
+									const revenueFormatted = revenue > 0 ? formatCurrency(revenue) : '—';
+									const isSelected = selectedInvoices.has(inv.id);
+									return `<div class="saved-list-item${isSelected ? ' selected' : ''}" data-id="${inv.id}">
+										<input type="checkbox" class="bulk-checkbox" data-id="${inv.id}" ${isSelected ? 'checked' : ''} />
+										<div class="saved-list-item-info">
+											<div class="saved-list-item-inv"><a href="#" class="inv-open-link" data-id="${inv.id}">${((inv.invoiceNumber || '—') + (inv.summary ? ' — ' + inv.summary : '')).replace(/</g, '&lt;')}</a></div>
+											<div class="saved-list-item-meta">${clientName.replace(/</g, '&lt;')} · ${dateFormatted} · ${revenueFormatted}</div>
+										</div>
+										<div class="saved-list-item-actions">
+											<button type="button" class="icon-btn btn-download" data-id="${inv.id}">
+												<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+												<span class="tooltip">Download PDF</span>
+											</button>
+											<button type="button" class="icon-btn btn-new-from" data-id="${inv.id}">
+												<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+												<span class="tooltip">New from this</span>
+											</button>
+											<button type="button" class="icon-btn btn-delete" data-id="${inv.id}">
+												<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+												<span class="tooltip">Delete</span>
+											</button>
+										</div>
+									</div>`;
+								}).join('')}
+							</div>`;
+						}).join('');
+
+						// Select-all checkbox handler
+						const selectAllCheckbox = $('select-all-checkbox');
+						if (selectAllCheckbox) {
+							selectAllCheckbox.addEventListener('change', (e) => {
+								if (e.target.checked) {
+									all.forEach(inv => selectedInvoices.add(inv.id));
+								} else {
+									selectedInvoices.clear();
+								}
+								// Update all item checkboxes and styles
+								listEl.querySelectorAll('.saved-list-item').forEach(item => {
+									const id = item.dataset.id;
+									const cb = item.querySelector('.bulk-checkbox');
+									if (cb) cb.checked = selectedInvoices.has(id);
+									item.classList.toggle('selected', selectedInvoices.has(id));
+								});
+								updateBulkToolbar();
+							});
+						}
+
+						// Individual checkbox handlers
+						listEl.querySelectorAll('.saved-list-item .bulk-checkbox').forEach(cb => {
+							cb.addEventListener('change', (e) => {
+								e.stopPropagation();
+								const id = cb.dataset.id;
+								const item = cb.closest('.saved-list-item');
+								if (cb.checked) {
+									selectedInvoices.add(id);
+									item?.classList.add('selected');
+								} else {
+									selectedInvoices.delete(id);
+									item?.classList.remove('selected');
+								}
+								updateBulkToolbar();
+							});
+							cb.addEventListener('click', (e) => e.stopPropagation());
+						});
+
+						// Invoice name link: open in Invoices section for editing (form + preview, Update/Cancel)
+						listEl.querySelectorAll('.inv-open-link').forEach(link => {
+							link.addEventListener('click', (e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								const id = link.dataset.id;
+								const inv = all.find(i => i.id === id);
+								if (inv) openInvoiceInInvoicesSection(inv);
+							});
+						});
+
+						// Add event listeners for download buttons
+						listEl.querySelectorAll('.btn-download').forEach(btn => {
+							btn.addEventListener('click', (e) => {
+								e.stopPropagation();
+								const id = btn.dataset.id;
+								const inv = all.find(i => i.id === id);
+								if (inv) downloadInvoicePDF(inv);
+							});
+						});
+
+						// Add event listeners for "New from this" (use as template)
+						listEl.querySelectorAll('.btn-new-from').forEach(btn => {
+							btn.addEventListener('click', (e) => {
+								e.stopPropagation();
+								const id = btn.dataset.id;
+								const inv = all.find(i => i.id === id);
+								if (!inv) return;
+								const template = { ...inv, date: toISODate(todayMDY()), invoiceNumber: '' };
+								setFormData(template);
+								generateInvoiceNumber();
+								refreshPreviewFromForm();
+								switchTab('create');
+								const detailsEl = $('f-desc');
+								if (detailsEl) detailsEl.focus();
+								showToast('New invoice started from template.');
+							});
+						});
+
+						// Add event listeners for delete buttons
+						listEl.querySelectorAll('.btn-delete').forEach(btn => {
+							btn.addEventListener('click', (e) => {
+								e.stopPropagation();
+								const id = btn.dataset.id;
+								const inv = all.find(i => i.id === id);
+								if (!inv) return;
+								if (!confirm(`Delete invoice "${inv.invoiceNumber}"?`)) return;
+								deleteInvoiceFromDB(id).then(() => {
+									showToast('Invoice deleted.');
+									renderSavedList($('invoice-search') ? $('invoice-search').value : '');
+								}).catch(err => {
+									console.error(err);
+									showToast('Could not delete invoice.');
+								});
+							});
+						});
+					}
+				}).catch((err) => {
+					console.error(err);
+					listEl.innerHTML = '<div class="saved-list-empty">Could not load saved invoices.</div>';
+				});
+			}
+
+			// Open tab from URL on load (after renderSavedList is defined)
+			const tabParam = new URLSearchParams(window.location.search).get('tab');
+			switchTab(tabParam === 'saved' ? 'saved' : 'create');
+
+			// New from dashboard: restore template from sessionStorage
+			try {
+				const newFromJson = sessionStorage.getItem('jonesco-new-from-invoice');
+				if (newFromJson && tabParam !== 'saved') {
+					sessionStorage.removeItem('jonesco-new-from-invoice');
+					editingInvoiceId = null;
+					editingInvoice = null;
+					lastSavedFormSnapshot = null;
+					setSaveButtonLabel(false);
+					const inv = JSON.parse(newFromJson);
+					if (inv && typeof setFormData === 'function') {
+						const template = { ...inv, date: toISODate(todayMDY()), invoiceNumber: '' };
+						setFormData(template);
+						generateInvoiceNumber();
+						refreshPreviewFromForm();
+						showToast('New invoice started from template.');
+						const detailsEl = $('f-desc');
+						if (detailsEl) detailsEl.focus();
+					}
+				}
+			} catch (e) {}
+
+			// Edit from dashboard: restore invoice from sessionStorage for editing
+			try {
+				const editJson = sessionStorage.getItem('jonesco-edit-invoice');
+				if (editJson && tabParam !== 'saved') {
+					sessionStorage.removeItem('jonesco-edit-invoice');
+					const inv = JSON.parse(editJson);
+					if (inv && inv.id && typeof setFormData === 'function') {
+						editingInvoiceId = inv.id;
+						editingInvoice = inv;
+						setFormData(inv);
+						refreshPreviewFromForm();
+						lastSavedFormSnapshot = getFormData();
+						setSaveButtonLabel(true);
+						switchTab('create');
+						showToast('Editing invoice.');
+						const detailsEl = $('f-desc');
+						if (detailsEl) detailsEl.focus();
+					}
+				}
+			} catch (e) {}
+
+			// Preview modal
+			const previewOverlay = $('preview-modal-overlay');
+			const previewCloseBtn = $('preview-modal-close');
+			let currentPreviewInvoice = null;
+
+			function closePreviewModal() {
+				if (previewOverlay) previewOverlay.classList.add('hidden');
+				currentPreviewInvoice = null;
+			}
+
+			// Load a saved invoice in the Invoices section (form + preview), like the edit workflow
+			function openInvoiceInInvoicesSection(inv) {
+				if (!inv || !inv.id) return;
+				editingInvoiceId = inv.id;
+				editingInvoice = inv;
+				setFormData(inv);
+				refreshPreviewFromForm();
+				lastSavedFormSnapshot = getFormData();
+				setSaveButtonLabel(true);
+				switchTab('create', { keepNavSaved: true });
+				window.scrollTo(0, 0);
+				const detailsEl = $('f-desc');
+				if (detailsEl) detailsEl.focus();
+				requestAnimationFrame(() => { window.scrollTo(0, 0); });
+			}
+
+			function openPreviewModal(inv) {
+				if (!inv || !previewOverlay) return;
+				currentPreviewInvoice = inv;
+
+				$('preview-modal-title').textContent = inv.invoiceNumber || 'Invoice Preview';
+				$('preview-inv').textContent = inv.invoiceNumber || '—';
+				$('preview-name').textContent = inv.client?.name || '—';
+				$('preview-contact').textContent = inv.client?.contact || '';
+				$('preview-company').textContent = inv.client?.company || '';
+				$('preview-citystate').textContent = inv.client?.cityState || '';
+				$('preview-phone').textContent = inv.client?.phone || '';
+				$('preview-date').textContent = formatDateLong(inv.date) || '';
+				$('preview-jobid').textContent = inv.clientJobId ? `Client Job ID: ${inv.clientJobId}` : '';
+				$('preview-pono').textContent = inv.clientPO ? `Client PO#: ${inv.clientPO}` : '';
+				$('preview-summary').textContent = inv.summary || '—';
+				$('preview-taxid').textContent = inv.taxId ? `Tax ID: ${inv.taxId}` : '';
+				$('preview-desc').textContent = inv.description || '';
+				$('preview-footermsg').textContent = inv.footerMessage || '';
+
+				const previewLineItemsWrap = $('preview-lineitems-wrap');
+				if (previewLineItemsWrap) previewLineItemsWrap.style.display = inv.showLineItems !== false ? '' : 'none';
+				const tbody = $('preview-lineitems-tbody');
+				if (tbody) {
+					tbody.innerHTML = '';
+					(inv.lineItems || []).forEach(item => {
+						const tr = document.createElement('tr');
+						tr.innerHTML = `<td>${(item.description || '').replace(/</g,'&lt;')}</td><td>${formatCurrency(item.unitPrice || 0)}</td><td>${item.qty || 1}</td><td>${formatCurrency(item.amount || 0)}</td>`;
+						tbody.appendChild(tr);
+					});
+				}
+				$('preview-totalfees').textContent = inv.subtotal != null ? `${formatCurrency(inv.subtotal)} TOTAL FEES` : '';
+				$('preview-subtotal').textContent = inv.subtotal != null ? formatCurrency(inv.subtotal) : '';
+				const taxRow = $('preview-taxrow');
+				if (taxRow) {
+					taxRow.style.display = inv.taxRate ? 'flex' : 'none';
+					const taxLabel = taxRow.querySelector('span:first-child');
+					if (taxLabel) taxLabel.textContent = inv.taxRate ? `Sales Tax (${inv.taxRate}%)` : 'Sales Tax';
+					$('preview-taxamt').textContent = inv.taxAmount != null ? formatCurrency(inv.taxAmount) : '';
+				}
+				$('preview-total').textContent = inv.total != null ? formatCurrency(inv.total) : '';
+				const pmtRow = $('preview-paymentsrow');
+				if (pmtRow) pmtRow.style.display = (inv.payments || 0) > 0 ? 'flex' : 'none';
+				$('preview-payments').textContent = inv.payments ? formatCurrency(inv.payments) : '';
+				$('preview-balancedue').textContent = inv.balanceDue != null ? formatCurrency(inv.balanceDue) : formatCurrency(inv.total || 0);
+
+				// Load logo — use same source as main invoice preview so it matches the output
+				const previewLogo = $('preview-logo');
+				const previewFallback = $('preview-logo-fallback');
+				const mainLogo = $('logo');
+				if (previewLogo && previewFallback) {
+					previewFallback.style.display = 'block';
+					previewLogo.style.display = 'none';
+					previewLogo.onload = () => {
+						previewLogo.style.display = 'block';
+						previewFallback.style.display = 'none';
+					};
+					previewLogo.onerror = () => {
+						previewFallback.style.display = 'block';
+						previewLogo.style.display = 'none';
+					};
+					previewLogo.src = (mainLogo && mainLogo.src && mainLogo.naturalHeight > 0)
+						? mainLogo.src
+						: 'logos/killy-black.svg';
+					if (previewLogo.complete && previewLogo.naturalHeight > 0) {
+						previewLogo.style.display = 'block';
+						previewFallback.style.display = 'none';
+					}
+				}
+
+				previewOverlay.classList.remove('hidden');
+			}
+
+			if (previewCloseBtn) previewCloseBtn.addEventListener('click', closePreviewModal);
+			if (previewOverlay) {
+				previewOverlay.addEventListener('click', (e) => {
+					if (e.target === previewOverlay) closePreviewModal();
+				});
+				document.addEventListener('keydown', (e) => {
+					if (e.key === 'Escape' && !previewOverlay.classList.contains('hidden')) {
+						closePreviewModal();
+					}
+				});
+			}
+
+			// Open invoice from URL (e.g. from dashboard: ?tab=saved&open=ID) — show in Invoices section
+			const openId = new URLSearchParams(window.location.search).get('open');
+			if (openId) {
+				getAllInvoicesFromDB().then((all) => {
+					const inv = all.find((i) => String(i.id) === String(openId));
+					if (inv) openInvoiceInInvoicesSection(inv);
+				});
+			}
+
+			// Preview modal actions
+			$('preview-download').addEventListener('click', () => {
+				if (!currentPreviewInvoice) return;
+				downloadInvoicePDF(currentPreviewInvoice);
+			});
+
+			$('preview-open-tab').addEventListener('click', () => {
+				if (!currentPreviewInvoice) return;
+				openInvoiceInNewTab(currentPreviewInvoice);
+			});
+
+			$('preview-edit').addEventListener('click', () => {
+				if (!currentPreviewInvoice) return;
+				editingInvoiceId = currentPreviewInvoice.id;
+				editingInvoice = currentPreviewInvoice;
+				setFormData(currentPreviewInvoice);
+				refreshPreviewFromForm();
+				lastSavedFormSnapshot = getFormData();
+				setSaveButtonLabel(true);
+				closePreviewModal();
+				switchTab('create');
+				const detailsEl = $('f-desc');
+				if (detailsEl) detailsEl.focus();
+			});
+
+			$('preview-new-from').addEventListener('click', () => {
+				if (!currentPreviewInvoice) return;
+				editingInvoiceId = null;
+				editingInvoice = null;
+				lastSavedFormSnapshot = null;
+				setSaveButtonLabel(false);
+				const template = { ...currentPreviewInvoice, date: toISODate(todayMDY()), invoiceNumber: '' };
+				setFormData(template);
+				generateInvoiceNumber();
+				refreshPreviewFromForm();
+				closePreviewModal();
+				switchTab('create');
+				const detailsEl = $('f-desc');
+				if (detailsEl) detailsEl.focus();
+				showToast('New invoice started from template.');
+			});
+
+			$('preview-delete').addEventListener('click', () => {
+				if (!currentPreviewInvoice) return;
+				if (!confirm(`Delete invoice "${currentPreviewInvoice.invoiceNumber}"?`)) return;
+				deleteInvoiceFromDB(currentPreviewInvoice.id).then(() => {
+					closePreviewModal();
+					showToast('Invoice deleted.');
+					renderSavedList($('invoice-search') ? $('invoice-search').value : '');
+				}).catch(err => {
+					console.error(err);
+					showToast('Could not delete invoice.');
+				});
+			});
+
+			// Download saved invoice as PDF
+			function downloadInvoicePDF(inv) {
+				if (!inv) return;
+
+				// Store current form data to restore later
+				const currentFormData = getFormData();
+
+				// Temporarily set the main preview with the saved invoice data
+				setFormData(inv);
+				refreshPreviewFromForm();
+
+				// Set document title for PDF filename
+				const originalTitle = document.title;
+				document.title = inv.invoiceNumber || 'Invoice';
+
+				// Close the preview modal if open
+				closePreviewModal();
+
+				// Small delay to ensure DOM updates, then print
+				setTimeout(() => {
+					window.print();
+
+					// Restore after print dialog
+					setTimeout(() => {
+						document.title = originalTitle;
+						setFormData(currentFormData);
+						refreshPreviewFromForm();
+					}, 100);
+				}, 50);
+			}
+
+			// Build standalone invoice HTML (Killy format, for new-tab and print)
+			function getInvoiceStandaloneHtml(inv) {
+				if (!inv) return '';
+				const esc = (s) => (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+				const client = inv.client || {};
+				const fmt = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(n || 0);
+				const dateStr = inv.date ? (() => { const d = new Date(inv.date); const m = ['January','February','March','April','May','June','July','August','September','October','November','December']; return `${m[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; })() : '';
+				const baseUrl = window.location.href.replace(/\/[^/]*$/, '/');
+				const fontUrl = (file) => esc(encodeURI(baseUrl + 'Trade/' + file));
+				const mainLogo = $('logo');
+				const logoUrl = (mainLogo && mainLogo.src && mainLogo.naturalHeight > 0) ? esc(mainLogo.src) : esc(baseUrl + 'logos/killy-black.svg');
+				const lineRows = (inv.lineItems || []).map(item => `<tr><td>${esc(item.description)}</td><td>${fmt(item.unitPrice)}</td><td>${item.qty || 1}</td><td>${fmt(item.amount)}</td></tr>`).join('');
+				return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Invoice ${esc(inv.invoiceNumber || '')}</title>
+<style>
+@font-face{font-family:"Trade Gothic";src:url("${fontUrl('Trade Gothic LT.ttf')}") format("truetype");font-weight:400;font-style:normal;}
+@font-face{font-family:"Trade Gothic";src:url("${fontUrl('Trade Gothic LT Bold.ttf')}") format("truetype");font-weight:700;font-style:normal;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:#f2f2f2;font-family:"Trade Gothic",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+.page{background:#fff;width:8.5in;min-height:11in;margin:40px auto;padding:28px;display:flex;flex-direction:column;box-shadow:0 0 10px rgba(0,0,0,0.15);}
+.killy-logo-row{margin-bottom:20px;}
+.brand img{display:block;height:83px;width:auto;max-width:509px;object-fit:contain;}
+.brand .fallback{font-weight:700;font-size:40px;color:#0b1220;}
+.killy-inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+.killy-client-name{font-weight:700;font-size:16px;}
+.killy-meta{font-size:15px;margin-bottom:12px;}
+.killy-title{font-weight:700;font-size:18px;margin-bottom:8px;}
+.killy-assignment{font-weight:700;font-size:16px;margin-bottom:8px;}
+.killy-jobdesc{white-space:pre-wrap;font-size:14px;line-height:1.5;margin:4px 0 16px;}
+.killy-items-table{width:100%;border-collapse:collapse;font-size:14px;}
+.killy-items-table th,.killy-items-table td{padding:6px 10px;text-align:left;border:1px solid #111;}
+.killy-items-table th{background:#f5f5f5;}
+.killy-totals{margin-top:16px;font-size:15px;}
+.killy-totals>div{display:flex;justify-content:space-between;margin-top:4px;}
+.killy-balance{font-weight:700;margin-top:8px;}
+.killy-footer{margin-top:auto;font-size:13px;color:#666;text-align:center;}
+@media print{html,body{background:#fff;}.page{margin:0;box-shadow:none;width:100%;min-height:auto;}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="killy-logo-row"><div class="brand"><img src="${logoUrl}" alt="Killy Photography" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/><div class="fallback" style="display:none;">KILLY PHOTOGRAPHY</div></div></div>
+  <div class="killy-inv-header">
+    <div><div class="killy-client-name">${esc(client.name)}</div><div>${esc(client.contact)}</div><div>${esc(client.company)}</div><div>${esc(client.cityState)}</div><div>${esc(client.phone)}</div></div>
+    <div>${esc(dateStr)}</div>
+  </div>
+  <div class="killy-meta"><div>Invoice No: ${esc(inv.invoiceNumber)}</div>${inv.clientJobId ? `<div>Client Job ID: ${esc(inv.clientJobId)}</div>` : ''}${inv.clientPO ? `<div>Client PO#: ${esc(inv.clientPO)}</div>` : ''}</div>
+  <div class="killy-title">ASSIGNMENT INVOICE</div>
+  <div class="killy-assignment">${esc(inv.summary)}</div>
+  ${inv.taxId ? `<div class="killy-meta">Tax ID: ${esc(inv.taxId)}</div>` : ''}
+  <div style="font-weight:700;margin-top:12px;">Job Description:</div>
+  <div class="killy-jobdesc">${esc(inv.description)}</div>
+  ${inv.showLineItems !== false ? `<table class="killy-items-table"><thead><tr><th>Detail of Fees</th><th>Each</th><th>Qty</th><th>Amount</th></tr></thead><tbody>${lineRows}</tbody></table>
+  <div style="font-weight:700;margin-top:4px;">${inv.subtotal != null ? fmt(inv.subtotal) + ' TOTAL FEES' : ''}</div>
+  ` : ''}
+  <div class="killy-totals">
+    <div><span>Subtotal</span><span>${fmt(inv.subtotal)}</span></div>
+    ${inv.taxRate ? `<div><span>Sales Tax (${inv.taxRate}%)</span><span>${fmt(inv.taxAmount)}</span></div>` : ''}
+    <div><span>Total</span><span>${fmt(inv.total)}</span></div>
+    ${(inv.payments || 0) > 0 ? `<div><span>Less Payments</span><span>${fmt(inv.payments)}</span></div>` : ''}
+    <div class="killy-balance"><span>Balance Due</span><span>${fmt(inv.balanceDue != null ? inv.balanceDue : inv.total)}</span></div>
+  </div>
+  <div class="killy-footer">${esc(inv.footerMessage || 'Thank you for choosing Killy Photography! Payment Due within 45 days of invoice date.')}</div>
+</div>
+</body>
+</html>`;
+			}
+
+			function openInvoiceInNewTab(inv) {
+				if (!inv) return;
+				const blob = new Blob([getInvoiceStandaloneHtml(inv)], { type: 'text/html' });
+				window.open(URL.createObjectURL(blob), '_blank');
+			}
+
+			// Delete invoice from DB
+			function deleteInvoiceFromDB(id) {
+				return KillyAPI.deleteInvoice(id);
+			}
+
+			// Bulk toolbar event handlers
+			const bulkToolbar = $('bulk-toolbar');
+			if (bulkToolbar) {
+				// Close/deselect button
+				bulkToolbar.querySelector('.btn-bulk-close').addEventListener('click', () => {
+					clearSelection();
+				});
+
+				// Bulk delete
+				bulkToolbar.querySelector('.btn-bulk-delete').addEventListener('click', async () => {
+					const count = selectedInvoices.size;
+					if (count === 0) return;
+					if (!confirm(`Delete ${count} invoice${count > 1 ? 's' : ''}?`)) return;
+
+					try {
+						const idsToDelete = Array.from(selectedInvoices);
+						await KillyAPI.bulkDeleteInvoices(idsToDelete);
+						clearSelection();
+						showToast(`${count} invoice${count > 1 ? 's' : ''} deleted.`);
+						renderSavedList($('invoice-search') ? $('invoice-search').value : '');
+					} catch (err) {
+						console.error(err);
+						showToast('Could not delete invoices.');
+					}
+				});
+
+				// Bulk download
+				bulkToolbar.querySelector('.btn-bulk-download').addEventListener('click', async () => {
+					const count = selectedInvoices.size;
+					if (count === 0) return;
+
+					const idsToDownload = Array.from(selectedInvoices);
+					const invoicesToDownload = allInvoicesCache.filter(inv => idsToDownload.includes(inv.id));
+
+					showToast(`Downloading ${count} invoice${count > 1 ? 's' : ''}...`);
+
+					// Download each invoice with a delay between
+					for (let i = 0; i < invoicesToDownload.length; i++) {
+						const inv = invoicesToDownload[i];
+						downloadInvoicePDF(inv);
+						// Wait for user to handle print dialog before next one
+						if (i < invoicesToDownload.length - 1) {
+							await new Promise(resolve => setTimeout(resolve, 1000));
+						}
+					}
+				});
+			}
+
+		</script>
+		</div>
+	</body>
+	</html>
+
+

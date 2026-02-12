@@ -1,0 +1,2100 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Jonesco</title>
+		<style>
+			:root {
+				--blue: #e6f0ff;
+				--ink: #0b1220;
+				--muted: #5a6573;
+				--placeholder: #9ca3af;
+				--border: #d6dde6;
+				--brand: #1f4acc;
+				--accent: #ea580c;
+				--accent-hover: #c2410c;
+				--accent-light: #fb923c;
+				--accent-lighter: #fdba74;
+			}
+			/* Trade Gothic font family (from ./trade folder) */
+			@font-face {
+				font-family: "Trade Gothic";
+				src: url("Trade/Trade Gothic LT.ttf") format("truetype");
+				font-weight: 400;
+				font-style: normal;
+				font-display: swap;
+			}
+			@font-face {
+				font-family: "Trade Gothic";
+				src: url("Trade/Trade Gothic LT Oblique.ttf") format("truetype");
+				font-weight: 400;
+				font-style: italic;
+				font-display: swap;
+			}
+			@font-face {
+				font-family: "Trade Gothic";
+				src: url("Trade/Trade Gothic LT Light.ttf") format("truetype");
+				font-weight: 300;
+				font-style: normal;
+				font-display: swap;
+			}
+			@font-face {
+				font-family: "Trade Gothic";
+				src: url("Trade/Trade Gothic LT Light Oblique.ttf") format("truetype");
+				font-weight: 300;
+				font-style: italic;
+				font-display: swap;
+			}
+			@font-face {
+				font-family: "Trade Gothic";
+				src: url("Trade/Trade Gothic LT Bold.ttf") format("truetype");
+				font-weight: 700;
+				font-style: normal;
+				font-display: swap;
+			}
+			@font-face {
+				font-family: "Trade Gothic";
+				src: url("Trade/Trade Gothic LT Bold Oblique.ttf") format("truetype");
+				font-weight: 700;
+				font-style: italic;
+				font-display: swap;
+			}
+			html {
+				scrollbar-gutter: stable;
+			}
+			html, body {
+				margin: 0;
+				padding: 0;
+				background: #f2f2f2 url('graybackground_optimized.jpg') no-repeat center center fixed;
+				background-size: cover;
+				color: #000;
+				font-family: "Trade Gothic", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+				-webkit-font-smoothing: antialiased;
+			}
+			.container {
+				max-width: 1132px;
+				margin: 0 auto;
+				padding: 24px 16px 48px 16px;
+				box-sizing: border-box;
+			}
+			.container--full {
+				max-width: 1800px;
+				width: 100%;
+			}
+			h1 {
+				margin: 0 0 16px 0;
+				font-size: 30px;
+				letter-spacing: -0.02em;
+			}
+			.grid {
+				display: grid;
+				grid-template-columns: 1fr 2fr;
+				gap: 20px;
+				align-items: stretch;
+			}
+			.grid > div:last-child {
+				overflow: visible;
+				min-width: 0;
+			}
+			.card {
+				background: rgba(255, 255, 255, 0.35);
+				backdrop-filter: blur(12px);
+				-webkit-backdrop-filter: blur(12px);
+				border: 1px solid rgba(255, 255, 255, 0.55);
+				border-radius: 12px;
+				padding: 16px;
+				box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+			}
+			.card.controls {
+				display: flex;
+				flex-direction: column;
+			}
+			.card.controls .details-section {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				min-height: 0;
+			}
+			.card.controls .details-section textarea {
+				flex: 1;
+				min-height: 120px;
+				resize: none;
+			}
+			.label {
+				display: block;
+				font-size: 15px;
+				color: #000;
+				margin-bottom: 6px;
+			}
+			input, textarea {
+				width: 100%;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				padding: 10px 12px;
+				font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+				font-size: 15px;
+				outline: none;
+				box-sizing: border-box;
+				color: #000;
+			}
+			input::placeholder, textarea::placeholder {
+				color: var(--placeholder);
+			}
+			input:focus, textarea:focus {
+				border-color: var(--accent);
+				box-shadow: 0 0 0 3px rgba(234,88,12,0.2);
+			}
+			.row {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 12px;
+			}
+			button {
+				border: none;
+				border-radius: 10px;
+				padding: 10px 14px;
+				font-size: 18px;
+				background: var(--accent);
+				color: #fff;
+				cursor: pointer;
+				transition: background 0.2s;
+			}
+			button:hover {
+				background: var(--accent-hover);
+			}
+			button.secondary {
+				background: #fff;
+				color: var(--ink);
+				border: 1px solid transparent;
+			}
+			button.secondary:hover {
+				background: #fff;
+				border-color: #d1d5db;
+			}
+
+			/* Invoice preview */
+			.invoice {
+				background: #fff;
+				border: none;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+				padding: 28px;
+				color: #111827;
+				max-width: 100%;
+				aspect-ratio: 8.5 / 11;
+				width: 100%;
+				display: flex;
+				flex-direction: column;
+				overflow-y: auto;
+				min-height: 0;
+				box-sizing: border-box;
+			}
+			.inv-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
+				margin-bottom: 70px;
+			}
+			.brand { display:flex; align-items:center; gap:10px; }
+			.brand img { display:block; height:83px; width:auto; max-width:509px; object-fit:contain; visibility: visible; }
+			.brand img[src=""] { display: none; }
+			.brand .fallback {
+				font-weight: 700;
+				font-size: 40px;
+				color: #0b1220;
+			}
+			.inv-meta {
+				text-align: right;
+				font-size: 16px;
+			}
+			.inv-number-row {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				justify-content: flex-end;
+			}
+			.inv-meta .big {
+				font-size: 20px;
+				font-weight: 700;
+			}
+			.inv-number-box {
+				border: 1px solid #000;
+				border-radius: 8px;
+				padding: 0 12px;
+				display: inline-flex;
+				align-items: center;
+				height: 36px;
+				box-sizing: border-box;
+			}
+			.inv-number-box .big {
+				color: var(--accent);
+			}
+			.section {
+				margin: 16px 0;
+			}
+			.small {
+				font-size: 15px;
+				color: var(--muted);
+			}
+			.section > .small:has(+ .client-info-container) {
+				font-size: 18px;
+			}
+			.placeholder {
+				color: var(--placeholder);
+			}
+			.client-info {
+				font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+				font-size: 15px;
+			}
+			.client-info-container {
+				border: 1px solid #111827;
+				border-radius: 8px;
+				padding: 12px;
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+			}
+			.section .small + .client-info-container {
+				margin-top: 8px;
+			}
+			.invoice-footer {
+				margin-top: auto;
+				padding-top: 4px;
+				text-align: right;
+				font-size: 13px;
+				color: var(--muted);
+			}
+			.blue-box {
+				background-color: #e6f3ff;
+				background-image: none;
+				padding: 42px;
+				min-height: 150px;
+				white-space: pre-wrap;
+				line-height: 1.4;
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				margin: 0;
+			}
+			/* Add space between the 'Details' label and blue area */
+			.section .small + .blue-box {
+				margin-top: 8px;
+			}
+			hr.sep {
+				border: 0;
+				border-top: 1px solid var(--border);
+				margin: 16px 0;
+			}
+			.killy-logo-row { margin-bottom: 20px; }
+			.killy-inv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+			.killy-client-block { font-size: 15px; }
+			.killy-client-name { font-weight: 700; font-size: 16px; }
+			.killy-client-line { margin-top: 2px; }
+			.killy-date { font-size: 15px; }
+			.killy-meta { font-size: 15px; margin-bottom: 12px; }
+			.killy-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; }
+			.killy-assignment { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+			.killy-label { font-weight: 700; font-size: 15px; margin-top: 12px; }
+			.killy-jobdesc { white-space: pre-wrap; font-size: 14px; line-height: 1.5; margin: 4px 0 16px; }
+			.killy-items-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+			.killy-items-table th, .killy-items-table td { padding: 6px 10px; text-align: left; border: 1px solid #111; }
+			.killy-total-fees { font-weight: 700; margin-top: 4px; }
+			.killy-totals { margin-top: 16px; font-size: 15px; }
+			.killy-totals > div { display: flex; justify-content: space-between; margin-top: 4px; }
+			.killy-balance { font-weight: 700; margin-top: 8px; }
+			.killy-footer { margin-top: 24px; font-size: 13px; color: var(--muted); }
+
+			/* Password screen */
+			#password-screen {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: url('background_optimized.jpg') no-repeat center center;
+				background-size: cover;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				z-index: 9999;
+			}
+			#password-screen.hidden {
+				display: none;
+			}
+			.password-box {
+				background: white;
+				padding: 40px;
+				border-radius: 12px;
+				box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+				width: 100%;
+				max-width: 400px;
+			}
+			.password-box .password-logo {
+				display: block;
+				height: 52px;
+				width: auto;
+				max-width: 318px;
+				margin: 0 auto 8px auto;
+				object-fit: contain;
+			}
+			.password-box h2 {
+				margin-top: 0;
+				margin-bottom: 24px;
+				text-align: center;
+				color: #333;
+				font-size: 30px;
+			}
+			.password-box label {
+				display: block;
+				font-size: 15px;
+				color: #000;
+				margin-bottom: 6px;
+			}
+			.password-box input[type="password"] {
+				width: 100%;
+				padding: 10px 12px;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+				font-size: 15px;
+				box-sizing: border-box;
+				color: #000;
+			}
+			.password-box input[type="password"]::placeholder {
+				color: var(--placeholder);
+			}
+			.password-box input[type="password"]:focus {
+				border-color: var(--accent);
+				box-shadow: 0 0 0 3px rgba(234,88,12,0.2);
+				outline: none;
+			}
+			.password-box .error {
+				color: #e74c3c;
+				margin-top: 8px;
+				font-size: 18px;
+				display: none;
+			}
+			.password-box .error.show {
+				display: block;
+			}
+			.password-box button {
+				width: 100%;
+				padding: 12px;
+				margin-top: 20px;
+				background: var(--accent);
+				color: white;
+				border: none;
+				border-radius: 6px;
+				font-size: 20px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: background 0.2s;
+			}
+			.password-box button:hover {
+				background: var(--accent-hover);
+			}
+
+			.app-layout {
+				display: flex;
+				min-height: 100vh;
+			}
+			.sidebar {
+				width: 280px;
+				flex-shrink: 0;
+				background: #13183f;
+				border-right: 1px solid rgba(255,255,255,0.08);
+				display: flex;
+				flex-direction: column;
+				transition: width 0.2s ease;
+				overflow: hidden;
+			}
+			.sidebar.collapsed {
+				width: 56px;
+			}
+			.sidebar-header {
+				display: flex;
+				align-items: stretch;
+				min-height: 0;
+				height: 64.5px;
+				border-bottom: 1px solid rgba(255,255,255,0.08);
+			}
+			.sidebar-logo {
+				flex: 1;
+				min-width: 0;
+				display: flex;
+				align-items: center;
+				padding: 0 8px 0 16px;
+			}
+			.sidebar-logo-img {
+				height: 36px;
+				width: auto;
+				max-width: 100%;
+				object-fit: contain;
+			}
+			.sidebar-logo-fallback {
+				display: none;
+				font-size: 29px;
+				font-weight: 700;
+				color: #fff;
+				letter-spacing: -0.02em;
+			}
+			.sidebar.collapsed .sidebar-logo {
+				display: none;
+			}
+			.sidebar-toggle {
+				width: 56px;
+				flex-shrink: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border: none;
+				background: transparent;
+				cursor: pointer;
+				color: rgba(255,255,255,0.7);
+				border-left: 1px solid rgba(255,255,255,0.08);
+				transition: background 0.2s, color 0.2s;
+				border-radius: 0;
+			}
+			.sidebar-toggle:hover {
+				background: rgba(255,255,255,0.08);
+				color: #fff;
+				border-radius: 0;
+			}
+			.sidebar-toggle svg {
+				width: 20px;
+				height: 20px;
+				flex-shrink: 0;
+				transition: transform 0.2s;
+			}
+			.sidebar.collapsed .sidebar-toggle svg {
+				transform: rotate(180deg);
+			}
+			.sidebar.collapsed .sidebar-toggle,
+			.sidebar.collapsed .sidebar-toggle:hover {
+				border-radius: 0;
+			}
+			.sidebar-nav {
+				padding: 12px 8px;
+				display: flex;
+				flex-direction: column;
+				gap: 4px;
+			}
+			.sidebar.collapsed .sidebar-nav {
+				padding-left: 0;
+				padding-right: 0;
+			}
+			.sidebar-link {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding: 10px 12px;
+				border-radius: 8px;
+				color: rgba(255,255,255,0.75);
+				text-decoration: none;
+				font-weight: 500;
+				font-size: 18px;
+				white-space: nowrap;
+				transition: background 0.2s, color 0.2s;
+			}
+			.sidebar-link:hover {
+				background: rgba(255,255,255,0.08);
+				color: #fff;
+			}
+			.sidebar-link-active {
+				background: rgba(234, 88, 12, 0.2);
+				color: var(--accent-light);
+			}
+			.sidebar-link-active:hover {
+				background: rgba(234, 88, 12, 0.25);
+				color: var(--accent-lighter);
+			}
+			.sidebar-link svg {
+				width: 22px;
+				height: 22px;
+				flex-shrink: 0;
+			}
+			.sidebar.collapsed .sidebar-link span {
+				position: absolute;
+				width: 0;
+				height: 0;
+				opacity: 0;
+				overflow: hidden;
+				pointer-events: none;
+			}
+			.sidebar.collapsed .sidebar-link {
+				justify-content: center;
+				align-items: center;
+				width: 56px;
+				min-width: 56px;
+				padding: 10px 0;
+				box-sizing: border-box;
+				border-radius: 0;
+			}
+			.sidebar.collapsed .sidebar-link[title] {
+				position: relative;
+			}
+			#main-content.hidden {
+				display: none;
+			}
+			#main-content {
+				flex: 1;
+				min-width: 0;
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+				align-items: stretch;
+				justify-content: flex-start;
+			}
+			#main-content > .container {
+				padding: 24px 16px 48px 16px;
+			}
+
+			/* Dashboard */
+			.dashboard-kpis {
+				display: grid;
+				grid-template-columns: repeat(4, minmax(0, 1fr));
+				gap: 16px;
+				margin-bottom: 32px;
+				width: 100%;
+			}
+			.dashboard-kpi {
+				background: #fff;
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				padding: 20px;
+				box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+			}
+			.dashboard-kpi-value {
+				font-size: 35px;
+				font-weight: 700;
+				color: var(--ink);
+				line-height: 1.2;
+			}
+			.dashboard-kpi-label {
+				font-size: 16px;
+				color: var(--muted);
+				margin-top: 4px;
+			}
+			.dashboard-section-title {
+				font-size: 20px;
+				font-weight: 700;
+				margin: 0 0 12px 0;
+				color: var(--ink);
+			}
+			.dashboard-revenue-chart {
+				background: #fff;
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				padding: 20px;
+				box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+				margin-bottom: 32px;
+			}
+			.dashboard-revenue-chart-rows {
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+			}
+			.dashboard-revenue-chart-row {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				min-height: 28px;
+			}
+			.dashboard-revenue-chart-year {
+				font-size: 18px;
+				font-weight: 600;
+				color: var(--ink);
+				width: 56px;
+				flex-shrink: 0;
+			}
+			.dashboard-revenue-chart-bar-wrap {
+				flex: 1;
+				height: 24px;
+				background: var(--border);
+				border-radius: 6px;
+				overflow: hidden;
+			}
+			.dashboard-revenue-chart-bar {
+				height: 100%;
+				background: var(--accent);
+				border-radius: 6px;
+				min-width: 4px;
+				transition: width 0.3s ease;
+			}
+			.dashboard-revenue-chart-value {
+				font-size: 16px;
+				font-weight: 600;
+				color: var(--ink);
+				width: 80px;
+				text-align: right;
+				flex-shrink: 0;
+			}
+			.dashboard-revenue-chart-empty {
+				text-align: center;
+				color: var(--muted);
+				font-size: 18px;
+				padding: 24px 0;
+			}
+			.dashboard-recent {
+				background: #fff;
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				padding: 20px;
+				box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+				margin-bottom: 24px;
+			}
+			.dashboard-recent-list {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			.dashboard-recent-row {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding: 10px 0;
+				border-bottom: 1px solid var(--border);
+			}
+			.dashboard-recent-row:last-child {
+				border-bottom: none;
+			}
+			.dashboard-recent-item {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				flex: 1;
+				min-width: 0;
+				text-decoration: none;
+				color: var(--ink);
+				font-size: 18px;
+			}
+			.dashboard-recent-item:hover {
+				color: var(--accent);
+			}
+			.dashboard-recent-num {
+				font-weight: 700;
+				color: var(--accent);
+				min-width: 140px;
+			}
+			.dashboard-recent-client {
+				color: var(--muted);
+				flex: 1;
+			}
+			.dashboard-recent-date {
+				font-size: 15px;
+				color: var(--muted);
+			}
+			.dashboard-recent-actions {
+				display: flex;
+				align-items: center;
+				gap: 4px;
+			}
+			.dashboard-recent-actions .icon-btn {
+				width: 36px;
+				height: 36px;
+			}
+			.dashboard-recent-actions .icon-btn svg {
+				width: 18px;
+				height: 18px;
+			}
+			/* Saved invoices modal */
+			.saved-modal-overlay {
+				position: fixed;
+				inset: 0;
+				background: rgba(0,0,0,0.4);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 9000;
+			}
+			.saved-modal-overlay.hidden {
+				display: none;
+			}
+			.saved-modal {
+				background: #fff;
+				border-radius: 12px;
+				box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+				width: 100%;
+				max-width: 480px;
+				max-height: 80vh;
+				display: flex;
+				flex-direction: column;
+			}
+			.saved-modal h3 {
+				margin: 0;
+				padding: 20px 20px 12px;
+				font-size: 23px;
+				border-bottom: 1px solid var(--border);
+			}
+			.saved-modal-list {
+				overflow-y: auto;
+				padding: 12px 20px 20px;
+			}
+			.saved-year {
+				margin-bottom: 16px;
+			}
+			.saved-year:last-child {
+				margin-bottom: 0;
+			}
+			.saved-year-title {
+				font-size: 15px;
+				font-weight: 700;
+				color: var(--muted);
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				margin-bottom: 8px;
+				padding-left: 4px;
+			}
+			.saved-item {
+				display: block;
+				width: 100%;
+				text-align: left;
+				padding: 12px 14px;
+				margin-bottom: 6px;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				background: #fff;
+				cursor: pointer;
+				font-family: inherit;
+				font-size: 16px;
+				transition: border-color 0.2s, background 0.2s;
+			}
+			.saved-item:hover {
+				border-color: var(--brand);
+				background: #f0f4ff;
+			}
+			.saved-item-inv {
+				font-weight: 700;
+				color: var(--ink);
+			}
+			.saved-item-meta {
+				font-size: 15px;
+				color: var(--muted);
+				margin-top: 4px;
+			}
+			.saved-empty {
+				text-align: center;
+				color: var(--muted);
+				padding: 24px 16px;
+				font-size: 18px;
+			}
+			.saved-modal-close {
+				position: absolute;
+				top: 16px;
+				right: 16px;
+				background: none;
+				border: none;
+				font-size: 25px;
+				color: var(--muted);
+				cursor: pointer;
+				padding: 4px;
+				line-height: 1;
+			}
+			.saved-modal-close:hover {
+				background: #e5e7eb;
+				color: var(--ink);
+			}
+			.saved-modal .saved-modal-head {
+				position: relative;
+			}
+
+			/* Toast */
+			.toast {
+				position: fixed;
+				bottom: 24px;
+				left: 50%;
+				transform: translateX(-50%);
+				background: var(--ink);
+				color: #fff;
+				padding: 12px 20px;
+				border-radius: 10px;
+				font-size: 18px;
+				z-index: 9100;
+				opacity: 0;
+				visibility: hidden;
+				transition: opacity 0.2s, visibility 0.2s;
+			}
+			.toast.show {
+				opacity: 1;
+				visibility: visible;
+			}
+
+			/* Tab switcher */
+			.tab-switcher {
+				display: flex;
+				gap: 4px;
+				background: #fff;
+				padding: 4px;
+				border-radius: 10px;
+				margin-bottom: 20px;
+				width: fit-content;
+			}
+			.tab-btn {
+				padding: 10px 20px;
+				border: none;
+				border-radius: 8px;
+				background: transparent;
+				color: var(--muted);
+				font-size: 18px;
+				font-weight: 500;
+				cursor: pointer;
+				transition: all 0.2s;
+			}
+			.tab-btn:hover {
+				background: #d1d5db;
+				color: var(--ink);
+			}
+			.tab-btn.active {
+				background: #000;
+				color: #fff;
+				box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+			}
+			.tab-btn.active:hover {
+				background: #000;
+			}
+			.tab-content {
+				display: none;
+			}
+			.tab-content.active {
+				display: block;
+			}
+
+			/* Saved invoices list view (same as Saved Invoices page) */
+			.saved-list-container {
+				background: rgba(255, 255, 255, 0.35);
+				backdrop-filter: blur(12px);
+				-webkit-backdrop-filter: blur(12px);
+				border: 1px solid rgba(255, 255, 255, 0.55);
+				border-radius: 12px;
+				padding: 20px;
+				margin: 0;
+				box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+			}
+			.saved-list-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				height: 35.5px;
+				margin-bottom: 16px;
+			}
+			.saved-list-header h2 {
+				margin: 0;
+				font-size: 23px;
+			}
+			.saved-header-actions { display: flex; align-items: center; gap: 8px; }
+			.invoice-search-wrap {
+				position: relative;
+				display: inline-flex;
+				align-items: center;
+			}
+			.invoice-search-wrap .invoice-search-icon {
+				position: absolute;
+				left: 12px;
+				width: 16px;
+				height: 16px;
+				pointer-events: none;
+				color: var(--muted);
+			}
+			.invoice-search-wrap #invoice-search {
+				width: 200px;
+				padding: 8px 12px 8px 36px;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				font-size: 16px;
+			}
+			.saved-list-year {
+				margin-bottom: 24px;
+			}
+			.saved-list-year:last-child {
+				margin-bottom: 0;
+			}
+			.saved-list-year-title {
+				font-size: 16px;
+				font-weight: 700;
+				color: var(--muted);
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				margin-bottom: 12px;
+				padding-left: 4px;
+			}
+			.saved-list-item {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 14px 16px;
+				margin-bottom: 8px;
+				border: 1px solid var(--border);
+				border-radius: 10px;
+				background: #fff;
+				box-sizing: border-box;
+				min-height: 52px;
+				transition: border-color 0.2s, background 0.2s;
+			}
+			.saved-list-item:hover {
+				background: #f9fafb;
+			}
+			.saved-list-item-info {
+				flex: 1;
+				min-width: 0;
+			}
+			.saved-list-item-inv {
+				font-weight: 700;
+				color: var(--ink);
+				font-size: 18px;
+			}
+			.saved-list-item-inv a {
+				color: var(--accent);
+				text-decoration: none;
+				cursor: pointer;
+			}
+			.saved-list-item-inv a:hover {
+				color: var(--accent-hover);
+				text-decoration: underline;
+			}
+			.saved-list-item-meta {
+				font-size: 15px;
+				color: var(--muted);
+				margin-top: 4px;
+			}
+			.saved-list-item-actions {
+				display: flex;
+				gap: 8px;
+				margin-left: 12px;
+				align-items: center;
+				visibility: hidden;
+				opacity: 0;
+				transition: opacity 0.15s, visibility 0.15s;
+			}
+			.saved-list-item:hover .saved-list-item-actions {
+				visibility: visible;
+				opacity: 1;
+			}
+			.bulk-mode-active .saved-list-item-actions {
+				visibility: hidden !important;
+				pointer-events: none;
+			}
+			.saved-list-item-actions .icon-btn {
+				width: 36px;
+				height: 36px;
+				padding: 0;
+				flex-shrink: 0;
+			}
+			.saved-list-item-actions .icon-btn svg {
+				width: 18px;
+				height: 18px;
+			}
+			.btn-delete {
+				background: #fff !important;
+				color: #dc2626 !important;
+				border: 1px solid transparent;
+			}
+			.btn-delete:hover {
+				background: #fff !important;
+				border-color: #d1d5db;
+			}
+			.saved-list-empty {
+				text-align: center;
+				color: var(--muted);
+				padding: 48px 20px;
+				font-size: 18px;
+			}
+
+			/* Bulk selection */
+			.bulk-checkbox {
+				width: 18px;
+				height: 18px;
+				min-width: 18px;
+				min-height: 18px;
+				margin-right: 12px;
+				cursor: pointer;
+				flex-shrink: 0;
+				appearance: none;
+				-webkit-appearance: none;
+				border: 2px solid #9ca3af;
+				border-radius: 4px;
+				background: #fff;
+				vertical-align: middle;
+				box-sizing: border-box;
+			}
+			.bulk-checkbox:checked {
+				background: #000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'%3E%3Cpath fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M1 5l3 3 7-7'/%3E%3C/svg%3E") center/10px 10px no-repeat;
+				border-color: #000;
+			}
+			.bulk-checkbox:indeterminate {
+				background: #000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' d='M2 6h8'/%3E%3C/svg%3E") center/10px 10px no-repeat;
+				border-color: #000;
+			}
+			.saved-list-item.selected {
+				box-shadow: 0 0 0 2px #000;
+				background: #fff;
+			}
+			.select-all-row {
+				display: flex;
+				align-items: center;
+				padding: 8px 4px;
+				margin-bottom: 12px;
+				font-size: 16px;
+				color: var(--ink);
+			}
+			.select-all-row label {
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+			}
+			.bulk-toolbar {
+				position: fixed;
+				bottom: 24px;
+				left: 50%;
+				transform: translateX(-50%);
+				background: var(--ink);
+				color: #fff;
+				padding: 12px 20px;
+				border-radius: 12px;
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+				z-index: 8000;
+			}
+			.bulk-toolbar.hidden {
+				display: none;
+			}
+			.bulk-toolbar-count {
+				font-size: 18px;
+				font-weight: 500;
+			}
+			.bulk-toolbar button {
+				padding: 8px 16px;
+				font-size: 16px;
+				border-radius: 8px;
+			}
+			.bulk-toolbar .btn-bulk-download {
+				background: var(--accent);
+			}
+			.bulk-toolbar .btn-bulk-download:hover {
+				background: var(--accent-hover);
+			}
+			.bulk-toolbar .btn-bulk-delete {
+				background: #fff;
+				color: #dc2626;
+			}
+			.bulk-toolbar .btn-bulk-delete:hover {
+				background: #f3f4f6;
+			}
+			.bulk-toolbar .btn-bulk-close {
+				background: transparent;
+				padding: 8px;
+				color: #9ca3af;
+			}
+			.bulk-toolbar .btn-bulk-close:hover {
+				color: #fff;
+				background: rgba(255,255,255,0.1);
+			}
+
+			/* Invoice preview modal */
+			.preview-modal-overlay {
+				position: fixed;
+				inset: 0;
+				background: rgba(0,0,0,0.5);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 9000;
+				padding: 20px;
+			}
+			.preview-modal-overlay.hidden {
+				display: none;
+			}
+			.preview-modal {
+				background: #f7f9fc;
+				border-radius: 12px;
+				box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+				width: 100%;
+				max-width: 700px;
+				max-height: 90vh;
+				display: flex;
+				flex-direction: column;
+				overflow: hidden;
+			}
+			.preview-modal-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 16px 20px;
+				background: #fff;
+				border-bottom: 1px solid var(--border);
+			}
+			.preview-modal-header h3 {
+				margin: 0;
+				font-size: 20px;
+			}
+			.preview-modal-close {
+				background: none;
+				border: none;
+				font-size: 30px;
+				color: var(--muted);
+				cursor: pointer;
+				padding: 4px;
+				line-height: 1;
+			}
+			.preview-modal-close:hover {
+				background: #e5e7eb;
+				color: var(--ink);
+			}
+			.preview-modal-body {
+				flex: 1;
+				overflow-y: auto;
+				padding: 20px;
+				display: flex;
+				justify-content: center;
+				align-items: flex-start;
+			}
+			.preview-modal-body .preview-scale-wrapper {
+				width: 8.5in;
+				flex-shrink: 0;
+				transform-origin: top center;
+			}
+			.preview-modal-body .invoice {
+				width: 8.5in;
+				min-height: 11in;
+				aspect-ratio: auto;
+				font-family: "Trade Gothic", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			}
+			.preview-modal-body .invoice .client-info {
+				font-family: "Trade Gothic", system-ui, -apple-system, sans-serif;
+			}
+			.preview-modal-body .invoice .brand .fallback {
+				font-weight: 700;
+				font-size: 40px;
+				color: #0b1220;
+			}
+			.preview-modal-footer {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				padding: 16px 0;
+				background: #fff;
+				border-top: 1px solid var(--border);
+				width: 100%;
+				box-sizing: border-box;
+			}
+			.preview-modal-footer .icon-btn {
+				flex-shrink: 0;
+			}
+			.preview-modal-footer #preview-download {
+				background: var(--accent);
+				color: #fff;
+				border-color: transparent;
+			}
+			.preview-modal-footer #preview-download:hover {
+				background: var(--accent-hover);
+				border-color: transparent;
+			}
+			.preview-modal-footer .preview-footer-link-delete {
+				color: #dc2626;
+			}
+			.preview-modal-footer .preview-footer-link-delete:hover {
+				color: #b91c1c;
+				border-color: rgba(220, 38, 38, 0.3);
+			}
+
+			/* Icon buttons with tooltips */
+			.icon-btn {
+				position: relative;
+				width: 42px;
+				height: 42px;
+				padding: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 10px;
+				background: #fff;
+				color: var(--ink);
+				border: 1px solid transparent;
+				cursor: pointer;
+				transition: background 0.2s, border-color 0.2s;
+			}
+			.icon-btn:hover {
+				background: #fff;
+				border-color: #d1d5db;
+			}
+			.icon-btn svg {
+				width: 20px;
+				height: 20px;
+			}
+			.icon-btn .tooltip {
+				position: absolute;
+				bottom: calc(100% + 8px);
+				left: 50%;
+				transform: translateX(-50%);
+				background: var(--ink);
+				color: #fff;
+				padding: 6px 10px;
+				border-radius: 6px;
+				font-size: 15px;
+				white-space: nowrap;
+				opacity: 0;
+				visibility: hidden;
+				transition: opacity 0.2s, visibility 0.2s;
+				pointer-events: none;
+				z-index: 100;
+			}
+			.icon-btn .tooltip::after {
+				content: '';
+				position: absolute;
+				top: 100%;
+				left: 50%;
+				transform: translateX(-50%);
+				border: 5px solid transparent;
+				border-top-color: var(--ink);
+			}
+			.icon-btn:hover .tooltip {
+				opacity: 1;
+				visibility: visible;
+			}
+			.actions {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				margin-top: 64px;
+			}
+			.actions .icon-btn {
+				flex-shrink: 0;
+			}
+
+			/* Responsive styles for mobile */
+			@media (max-width: 768px) {
+				.container {
+					margin: 0 auto;
+				}
+				#main-content > .container {
+					padding: 24px 12px 48px 12px;
+				}
+				.dashboard-kpis {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+				}
+				.tab-switcher {
+					width: 100%;
+				}
+				.tab-btn {
+					flex: 1;
+					text-align: center;
+				}
+				.grid {
+					grid-template-columns: 1fr;
+					gap: 16px;
+				}
+				.grid > div:last-child {
+					display: none; /* Hide preview on mobile */
+				}
+				.card {
+					padding: 12px;
+				}
+				h1 {
+					font-size: 25px;
+				}
+				.actions {
+					margin-top: 32px;
+					flex-wrap: wrap;
+				}
+				.actions > button:first-child {
+					width: 100%;
+					flex: none;
+				}
+				.actions .icon-btn {
+					width: 42px;
+				}
+				.saved-list-item {
+					flex-wrap: nowrap;
+					padding: 10px 12px;
+					min-height: 48px;
+				}
+				.saved-list-item .bulk-checkbox {
+					flex-shrink: 0;
+					margin-right: 8px;
+				}
+				.saved-list-item-info {
+					flex: 1;
+					min-width: 0;
+				}
+				.saved-list-item-actions {
+					margin-left: 8px;
+					gap: 4px;
+					visibility: visible;
+					opacity: 1;
+				}
+				.bulk-mode-active .saved-list-item-actions {
+					visibility: hidden !important;
+					pointer-events: none;
+				}
+				.saved-list-item-actions .icon-btn {
+					width: 32px;
+					height: 32px;
+				}
+				.preview-modal-overlay {
+					padding: 10px;
+				}
+				.preview-modal {
+					max-height: 95vh;
+				}
+				.preview-modal-body {
+					padding: 10px;
+				}
+				.preview-modal-body .invoice {
+					font-size: 11px;
+					padding: 14px;
+				}
+				.bulk-toolbar {
+					left: 12px;
+					right: 12px;
+					transform: none;
+					display: grid;
+					grid-template-columns: 1fr 1fr;
+					grid-template-rows: auto auto;
+					gap: 12px 8px;
+				}
+				.bulk-toolbar-count {
+					grid-column: 1;
+					grid-row: 1;
+					align-self: center;
+				}
+				.bulk-toolbar .btn-bulk-close {
+					grid-column: 2;
+					grid-row: 1;
+					justify-self: end;
+				}
+				.bulk-toolbar .btn-bulk-download {
+					grid-column: 1;
+					grid-row: 2;
+					width: 100%;
+				}
+				.bulk-toolbar .btn-bulk-delete {
+					grid-column: 2;
+					grid-row: 2;
+					width: 100%;
+				}
+			}
+
+			/* Print styles */
+			@page {
+				size: Letter;
+				margin: 0;
+			}
+			@media print {
+				* {
+					-webkit-print-color-adjust: exact !important;
+					print-color-adjust: exact !important;
+					color-adjust: exact !important;
+				}
+				html, body {
+					width: 8.5in;
+					height: 11in;
+					margin: 0;
+					padding: 0;
+					overflow: hidden;
+				}
+				body {
+					background: #fff;
+				}
+				#main-content {
+					background: none !important;
+					min-height: auto;
+				}
+				h1 {
+					display: none !important;
+				}
+				.tab-switcher {
+					display: none !important;
+				}
+				#tab-saved {
+					display: none !important;
+				}
+				#tab-create {
+					display: block !important;
+				}
+				.grid, .card {
+					display: block !important;
+				}
+				.controls {
+					display: none !important;
+				}
+				.saved-modal-overlay,
+				.preview-modal-overlay,
+				.toast {
+					display: none !important;
+				}
+				.grid > div:last-child {
+					display: flex !important; /* Show preview + keep flex so footer stays at bottom */
+					flex-direction: column !important;
+				}
+				.container {
+					max-width: 100%;
+					margin: 0;
+					padding: 0;
+					width: 8.5in;
+					height: 11in;
+				}
+				.invoice {
+					display: flex !important;
+					flex-direction: column !important;
+					border: none;
+					box-shadow: none;
+					padding: 0.5in;
+					width: 8.5in;
+					height: 11in;
+					max-width: 8.5in;
+					max-height: 11in;
+					aspect-ratio: auto;
+					overflow: hidden;
+					page-break-after: avoid;
+					page-break-inside: avoid;
+					box-sizing: border-box;
+					transform: none;
+				}
+				.inv-body {
+					flex: 1 !important;
+					min-height: 0 !important;
+				}
+				.inv-details-col {
+					min-height: 0 !important;
+				}
+				.blue-box {
+					flex: 1 !important;
+					min-height: 0 !important;
+					background: #e6f3ff !important;
+					-webkit-print-color-adjust: exact !important;
+					print-color-adjust: exact !important;
+					color-adjust: exact !important;
+				}
+				.invoice-footer {
+					margin-top: auto !important;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="app-layout">
+			<nav class="sidebar" id="sidebar" aria-label="Main navigation">
+				<div class="sidebar-header">
+					<div class="sidebar-logo">
+						<img src="logos/killy-white.svg" alt="Killy" class="sidebar-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+						<span class="sidebar-logo-fallback">Killy</span>
+					</div>
+					<button type="button" class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+					</button>
+				</div>
+				<div class="sidebar-nav">
+					<a href="index.html" class="sidebar-link sidebar-link-active" data-title="Dashboard">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+						<span>Dashboard</span>
+					</a>
+					<a href="invoices.html?tab=create" class="sidebar-link" data-title="Invoices">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+						<span>Invoices</span>
+					</a>
+					<a href="invoices.html?tab=saved" class="sidebar-link" data-title="Saved invoices">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/></svg>
+						<span>Saved invoices</span>
+					</a>
+				</div>
+			</nav>
+			<div id="main-content">
+		<div class="container container--full">
+			<div class="saved-list-container">
+				<div class="saved-list-header">
+					<h2>Dashboard</h2>
+					<div class="saved-header-actions">
+						<button type="button" class="icon-btn" id="btn-export" aria-label="Export data">
+							<span class="tooltip">Export data</span>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+						</button>
+						<button type="button" class="icon-btn" id="btn-import" aria-label="Import data">
+							<span class="tooltip">Import data</span>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+						</button>
+						<input type="file" id="import-file-input" accept=".json" style="display:none" />
+					</div>
+				</div>
+				<div class="dashboard-kpis">
+					<div class="dashboard-kpi">
+						<div class="dashboard-kpi-value" id="kpi-total">—</div>
+						<div class="dashboard-kpi-label">Total invoices</div>
+					</div>
+					<div class="dashboard-kpi">
+						<div class="dashboard-kpi-value" id="kpi-clients">—</div>
+						<div class="dashboard-kpi-label">Unique clients</div>
+					</div>
+					<div class="dashboard-kpi">
+						<div class="dashboard-kpi-value" id="kpi-revenue-year">—</div>
+						<div class="dashboard-kpi-label">Revenue this year</div>
+					</div>
+					<div class="dashboard-kpi">
+						<div class="dashboard-kpi-value" id="kpi-revenue">—</div>
+						<div class="dashboard-kpi-label">Total revenue</div>
+					</div>
+				</div>
+				<h2 class="dashboard-section-title">Revenue by year</h2>
+				<div id="dashboard-revenue-chart" class="dashboard-revenue-chart">
+					<div class="dashboard-revenue-chart-empty">Loading…</div>
+				</div>
+				<h2 class="dashboard-section-title">Recent invoices</h2>
+				<div class="dashboard-recent">
+					<ul class="dashboard-recent-list" id="dashboard-recent-list">
+						<li class="dashboard-recent-empty" id="dashboard-recent-empty">Loading…</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+			</div>
+		</div>
+		<div id="preview-modal-overlay" class="preview-modal-overlay hidden">
+			<div class="preview-modal">
+				<div class="preview-modal-header">
+					<h3 id="preview-modal-title">Invoice Preview</h3>
+					<button type="button" class="preview-modal-close" id="preview-modal-close">&times;</button>
+				</div>
+				<div class="preview-modal-body">
+					<div class="invoice" id="preview-modal-invoice">
+						<div class="killy-logo-row"><div class="brand"><img id="preview-logo" alt="Killy Photography logo" /><div id="preview-logo-fallback" class="fallback">KILLY PHOTOGRAPHY</div></div></div>
+						<div class="killy-inv-header">
+							<div class="killy-client-block">
+								<div id="preview-name" class="killy-client-name"></div>
+								<div id="preview-contact" class="killy-client-line"></div>
+								<div id="preview-company" class="killy-client-line"></div>
+								<div id="preview-citystate" class="killy-client-line"></div>
+								<div id="preview-phone" class="killy-client-line"></div>
+							</div>
+							<div id="preview-date" class="killy-date"></div>
+						</div>
+						<div class="killy-meta"><div>Invoice No: <span id="preview-inv"></span></div><div id="preview-jobid" class="killy-meta-opt"></div><div id="preview-pono" class="killy-meta-opt"></div></div>
+						<div class="killy-title">ASSIGNMENT INVOICE</div>
+						<div id="preview-summary" class="killy-assignment"></div>
+						<div id="preview-taxid" class="killy-meta-opt"></div>
+						<div class="killy-label">Job Description:</div>
+						<div id="preview-desc" class="killy-jobdesc"></div>
+						<div class="killy-lineitems"><table class="killy-items-table"><thead><tr><th>Detail of Fees</th><th>Each</th><th>Qty</th><th>Amount</th></tr></thead><tbody id="preview-lineitems-tbody"></tbody></table><div id="preview-totalfees" class="killy-total-fees"></div></div>
+						<div class="killy-totals">
+							<div><span>Subtotal</span><span id="preview-subtotal"></span></div>
+							<div id="preview-taxrow"><span>Sales Tax</span><span id="preview-taxamt"></span></div>
+							<div><span>Total</span><span id="preview-total"></span></div>
+							<div id="preview-paymentsrow"><span>Less Payments</span><span id="preview-payments"></span></div>
+							<div class="killy-balance"><span>Balance Due</span><span id="preview-balancedue"></span></div>
+						</div>
+						<div id="preview-footermsg" class="killy-footer"></div>
+					</div>
+				</div>
+				<div class="preview-modal-footer">
+					<button type="button" class="icon-btn" id="preview-download" aria-label="Download PDF">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+						<span class="tooltip">Download PDF</span>
+					</button>
+					<button type="button" class="icon-btn preview-footer-link" id="preview-open-tab" aria-label="Open in new tab">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+						<span class="tooltip">Open in new tab</span>
+					</button>
+					<button type="button" class="icon-btn preview-footer-link" id="preview-edit" aria-label="Edit">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+						<span class="tooltip">Edit</span>
+					</button>
+					<button type="button" class="icon-btn preview-footer-link" id="preview-new-from" aria-label="New from this">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+						<span class="tooltip">New from this</span>
+					</button>
+					<button type="button" class="icon-btn preview-footer-link preview-footer-link-delete" id="preview-delete" aria-label="Delete">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+						<span class="tooltip">Delete</span>
+					</button>
+				</div>
+			</div>
+		</div>
+		<div id="toast" class="toast" role="status"></div>
+		<script src="api.js"></script>
+		<script>
+			const $ = (id) => document.getElementById(id);
+			(function initSidebar() {
+				const sidebar = $('sidebar');
+				const toggleBtn = $('sidebar-toggle');
+				const key = 'jonesco-sidebar-collapsed';
+				function updateSidebarTitles() {
+					if (!sidebar) return;
+					const collapsed = sidebar.classList.contains('collapsed');
+					sidebar.querySelectorAll('.sidebar-link[data-title]').forEach(link => {
+						if (collapsed) link.title = link.dataset.title || '';
+						else link.removeAttribute('title');
+					});
+				}
+				if (sidebar && toggleBtn) {
+					const collapsed = localStorage.getItem(key) === 'true';
+					if (collapsed) sidebar.classList.add('collapsed');
+					updateSidebarTitles();
+					toggleBtn.addEventListener('click', () => {
+						sidebar.classList.toggle('collapsed');
+						localStorage.setItem(key, sidebar.classList.contains('collapsed'));
+						updateSidebarTitles();
+					});
+				}
+			})();
+
+			(function initDashboard() {
+				const RECENT_COUNT = 10;
+
+				function getAllInvoices() {
+					return typeof KillyAPI !== 'undefined' ? KillyAPI.getAllInvoices() : Promise.resolve([]);
+				}
+
+				function formatDate(str) {
+					if (!str) return '—';
+					const d = new Date(str);
+					if (isNaN(d.getTime())) return str;
+					const m = d.getMonth() + 1;
+					const day = d.getDate();
+					const y = d.getFullYear();
+					return m + '-' + day + '-' + y;
+				}
+
+				// Parse total from description: prefer "Total Due:" or "Total:" line, then "N ... $X each", else last $ amount
+				function parseAmountFromDescription(desc) {
+					if (!desc || typeof desc !== 'string') return 0;
+					const totalDueMatch = desc.match(/(?:Total\s+Due|Total)\s*:?\s*[\s\n]*\$[\d,]+(?:\.\d{2})?/gi);
+					if (totalDueMatch && totalDueMatch.length > 0) {
+						const lastTotal = totalDueMatch[totalDueMatch.length - 1];
+						const amtStr = lastTotal.match(/\$[\d,]+(?:\.\d{2})?/);
+						if (amtStr) {
+							const num = parseFloat(amtStr[0].replace(/[\$,]/g, ''), 10);
+							if (!isNaN(num)) return num;
+						}
+					}
+					// "N items ... $X each" (e.g. "12 Yokai... $8 each" → 96)
+					const eachMatch = desc.match(/^(\d+)\s+[\s\S]*?\$\s*([\d,]+(?:\.\d{2})?)\s*each/im);
+					if (eachMatch) {
+						const qty = parseInt(eachMatch[1], 10);
+						const unit = parseFloat(eachMatch[2].replace(/[,]/g, ''), 10);
+						if (!isNaN(qty) && !isNaN(unit)) return qty * unit;
+					}
+					const matches = desc.match(/\$[\d,]+(?:\.\d{2})?/g);
+					if (!matches || matches.length === 0) return 0;
+					const last = matches[matches.length - 1];
+					const num = parseFloat(last.replace(/[\$,]/g, ''), 10);
+					return isNaN(num) ? 0 : num;
+				}
+
+				function formatCurrency(n) {
+					return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
+				}
+
+				function getInvoiceById(id) {
+					return typeof KillyAPI !== 'undefined' ? KillyAPI.getInvoiceById(id) : Promise.resolve(null);
+				}
+
+				function deleteInvoiceFromDB(id) {
+					return typeof KillyAPI !== 'undefined' ? KillyAPI.deleteInvoice(id) : Promise.resolve();
+				}
+
+				function showToast(msg, durationMs) {
+					const el = $('toast');
+					if (!el) return;
+					el.textContent = msg;
+					el.classList.add('show');
+					clearTimeout(showToast._t);
+					showToast._t = setTimeout(() => el.classList.remove('show'), durationMs ?? 2000);
+				}
+
+				function buildInvoiceHtml(inv, triggerPrint) {
+					const esc = (s) => (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+					const fmt = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(n || 0);
+					const dateFmt = (iso) => { if (!iso) return ''; const d = new Date(iso); const m = ['January','February','March','April','May','June','July','August','September','October','November','December']; return m[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); };
+					const client = inv.client || {};
+					const baseUrl = window.location.href.replace(/\/[^/]*$/, '/');
+					const fontUrl = (file) => esc(encodeURI(baseUrl + 'Trade/' + file));
+					const logoUrl = esc(baseUrl + 'logos/killy-black.svg');
+					const dateStr = dateFmt(inv.date);
+					const lineRows = (inv.lineItems || []).map(item => '<tr><td>' + esc(item.description) + '</td><td>' + fmt(item.unitPrice) + '</td><td>' + (item.qty || 1) + '</td><td>' + fmt(item.amount) + '</td></tr>').join('');
+					const printScript = triggerPrint ? '<script>window.onload=function(){window.print();}<\/script>' : '';
+					return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>${esc(inv.invoiceNumber || 'Invoice')}</title>
+<style>
+@font-face{font-family:"Trade Gothic";src:url("${fontUrl('Trade Gothic LT.ttf')}") format("truetype");font-weight:400;font-style:normal;}
+@font-face{font-family:"Trade Gothic";src:url("${fontUrl('Trade Gothic LT Bold.ttf')}") format("truetype");font-weight:700;font-style:normal;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:#f2f2f2;font-family:"Trade Gothic",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+.page{background:#fff;width:8.5in;min-height:11in;margin:40px auto;padding:28px;display:flex;flex-direction:column;box-shadow:0 0 10px rgba(0,0,0,0.15);}
+.inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:70px;}
+.brand img{display:block;height:83px;width:auto;max-width:509px;object-fit:contain;}
+.brand .fallback{font-weight:700;font-size:40px;color:#0b1220;}
+.inv-meta{text-align:right;font-size:16px;}
+.inv-number-row{display:flex;align-items:center;gap:8px;justify-content:flex-end;}
+.inv-number-row .big{font-size:20px;font-weight:700;}
+.inv-number-box{border:1px solid #000;border-radius:8px;padding:0 12px;display:inline-flex;align-items:center;height:36px;}
+.inv-number-box .big{color:var(--accent);}
+.section{margin:16px 0;}
+.small{font-size:15px;color:#5a6573;}
+.section>.small:first-child{font-size:18px;}
+.client-info{font-family:"Trade Gothic",system-ui,sans-serif;font-size:15px;}
+.client-info-container{border:1px solid #111827;border-radius:8px;padding:12px;flex:1;display:flex;flex-direction:column;margin-top:8px;}
+.blue-box{background-color:#e6f3ff;padding:42px;min-height:150px;white-space:pre-wrap;line-height:1.4;flex:1;display:flex;flex-direction:column;font-size:15px;}
+.invoice-footer{margin-top:auto;padding-top:4px;text-align:right;font-size:13px;color:#5a6573;}
+.killy-logo-row{margin-bottom:20px;}
+.killy-inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+.killy-client-name{font-weight:700;font-size:16px;}
+.killy-meta{font-size:15px;margin-bottom:12px;}
+.killy-title{font-weight:700;font-size:18px;margin-bottom:8px;}
+.killy-assignment{font-weight:700;font-size:16px;margin-bottom:8px;}
+.killy-jobdesc{white-space:pre-wrap;font-size:14px;line-height:1.5;margin:4px 0 16px;}
+.killy-items-table{width:100%;border-collapse:collapse;font-size:14px;}
+.killy-items-table th,.killy-items-table td{padding:6px 10px;text-align:left;border:1px solid #111;}
+.killy-items-table th{background:#f5f5f5;}
+.killy-totals{margin-top:16px;font-size:15px;}
+.killy-totals>div{display:flex;justify-content:space-between;margin-top:4px;}
+.killy-balance{font-weight:700;margin-top:8px;}
+.killy-footer{margin-top:24px;font-size:13px;color:#666;}
+@media print{html,body{background:#fff;}.page{margin:0;box-shadow:none;width:100%;min-height:auto;}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="killy-logo-row"><div class="brand"><img src="${logoUrl}" alt="Killy Photography" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/><div class="fallback" style="display:none;">KILLY PHOTOGRAPHY</div></div></div>
+  <div class="killy-inv-header">
+    <div><div class="killy-client-name">${esc(client.name)}</div><div>${esc(client.contact)}</div><div>${esc(client.company)}</div><div>${esc(client.cityState)}</div><div>${esc(client.phone)}</div></div>
+    <div>${dateStr}</div>
+  </div>
+  <div class="killy-meta"><div>Invoice No: ${esc(inv.invoiceNumber)}</div>${inv.clientJobId ? '<div>Client Job ID: '+esc(inv.clientJobId)+'</div>' : ''}${inv.clientPO ? '<div>Client PO#: '+esc(inv.clientPO)+'</div>' : ''}</div>
+  <div class="killy-title">ASSIGNMENT INVOICE</div>
+  <div class="killy-assignment">${esc(inv.summary)}</div>
+  ${inv.taxId ? '<div class="killy-meta">Tax ID: '+esc(inv.taxId)+'</div>' : ''}
+  <div style="font-weight:700;margin-top:12px;">Job Description:</div>
+  <div class="killy-jobdesc">${esc(inv.description)}</div>
+  <table class="killy-items-table"><thead><tr><th>Detail of Fees</th><th>Each</th><th>Qty</th><th>Amount</th></tr></thead><tbody>${lineRows}</tbody></table>
+  <div style="font-weight:700;margin-top:4px;">${inv.subtotal != null ? fmt(inv.subtotal) + ' TOTAL FEES' : ''}</div>
+  <div class="killy-totals">
+    <div><span>Subtotal</span><span>${fmt(inv.subtotal)}</span></div>
+    ${inv.taxRate ? '<div><span>Sales Tax ('+inv.taxRate+'%)</span><span>'+fmt(inv.taxAmount)+'</span></div>' : ''}
+    <div><span>Total</span><span>${fmt(inv.total)}</span></div>
+    ${(inv.payments || 0) > 0 ? '<div><span>Less Payments</span><span>'+fmt(inv.payments)+'</span></div>' : ''}
+    <div class="killy-balance"><span>Balance Due</span><span>${fmt(inv.balanceDue != null ? inv.balanceDue : inv.total)}</span></div>
+  </div>
+  <div class="killy-footer">${esc(inv.footerMessage || 'Thank you for choosing Killy Photography! Payment Due within 45 days of invoice date.')}</div>
+</div>
+${printScript}
+</body>
+</html>`;
+				}
+
+				const previewOverlay = $('preview-modal-overlay');
+				const previewCloseBtn = $('preview-modal-close');
+				let currentPreviewInvoice = null;
+
+				function closePreviewModal() {
+					if (previewOverlay) previewOverlay.classList.add('hidden');
+					currentPreviewInvoice = null;
+				}
+
+				function formatDateLong(iso) {
+					if (!iso) return '';
+					const d = new Date(iso);
+					if (isNaN(d.getTime())) return iso;
+					const m = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+					return m[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+				}
+				function formatCurrency(n) {
+					return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(n || 0);
+				}
+				function openPreviewModal(inv) {
+					if (!inv || !previewOverlay) return;
+					currentPreviewInvoice = inv;
+					$('preview-modal-title').textContent = inv.invoiceNumber || 'Invoice Preview';
+					$('preview-inv').textContent = inv.invoiceNumber || '—';
+					$('preview-name').textContent = inv.client?.name || '—';
+					$('preview-contact').textContent = inv.client?.contact || '';
+					$('preview-company').textContent = inv.client?.company || '';
+					$('preview-citystate').textContent = inv.client?.cityState || '';
+					$('preview-phone').textContent = inv.client?.phone || '';
+					$('preview-date').textContent = formatDateLong(inv.date) || '';
+					$('preview-jobid').textContent = inv.clientJobId ? 'Client Job ID: ' + inv.clientJobId : '';
+					$('preview-pono').textContent = inv.clientPO ? 'Client PO#: ' + inv.clientPO : '';
+					$('preview-summary').textContent = inv.summary || '—';
+					$('preview-taxid').textContent = inv.taxId ? 'Tax ID: ' + inv.taxId : '';
+					$('preview-desc').textContent = inv.description || '';
+					$('preview-footermsg').textContent = inv.footerMessage || '';
+					const tbody = $('preview-lineitems-tbody');
+					if (tbody) {
+						tbody.innerHTML = '';
+						(inv.lineItems || []).forEach(function(item) {
+							const tr = document.createElement('tr');
+							tr.innerHTML = '<td>' + (item.description || '').replace(/</g,'&lt;') + '</td><td>' + formatCurrency(item.unitPrice) + '</td><td>' + (item.qty || 1) + '</td><td>' + formatCurrency(item.amount) + '</td>';
+							tbody.appendChild(tr);
+						});
+					}
+					$('preview-totalfees').textContent = inv.subtotal != null ? formatCurrency(inv.subtotal) + ' TOTAL FEES' : '';
+					$('preview-subtotal').textContent = inv.subtotal != null ? formatCurrency(inv.subtotal) : '';
+					const taxRow = $('preview-taxrow');
+					if (taxRow) {
+						taxRow.style.display = inv.taxRate ? 'flex' : 'none';
+						var taxLabel = taxRow.querySelector('span:first-child');
+						if (taxLabel) taxLabel.textContent = inv.taxRate ? 'Sales Tax (' + inv.taxRate + '%)' : 'Sales Tax';
+						$('preview-taxamt').textContent = inv.taxAmount != null ? formatCurrency(inv.taxAmount) : '';
+					}
+					$('preview-total').textContent = inv.total != null ? formatCurrency(inv.total) : '';
+					var pmtRow = $('preview-paymentsrow');
+					if (pmtRow) pmtRow.style.display = (inv.payments || 0) > 0 ? 'flex' : 'none';
+					$('preview-payments').textContent = inv.payments ? formatCurrency(inv.payments) : '';
+					$('preview-balancedue').textContent = inv.balanceDue != null ? formatCurrency(inv.balanceDue) : formatCurrency(inv.total || 0);
+					const previewLogo = $('preview-logo');
+					const previewFallback = $('preview-logo-fallback');
+					if (previewLogo && previewFallback) {
+						previewFallback.style.display = 'block';
+						previewLogo.style.display = 'none';
+						previewLogo.onload = () => {
+							previewLogo.style.display = 'block';
+							previewFallback.style.display = 'none';
+						};
+						previewLogo.onerror = () => {
+							previewFallback.style.display = 'block';
+							previewLogo.style.display = 'none';
+						};
+						previewLogo.src = 'logos/killy-black.svg';
+						if (previewLogo.complete && previewLogo.naturalHeight > 0) {
+							previewLogo.style.display = 'block';
+							previewFallback.style.display = 'none';
+						}
+					}
+					previewOverlay.classList.remove('hidden');
+				}
+
+				if (previewCloseBtn) previewCloseBtn.addEventListener('click', closePreviewModal);
+				if (previewOverlay) {
+					previewOverlay.addEventListener('click', (e) => {
+						if (e.target === previewOverlay) closePreviewModal();
+					});
+					document.addEventListener('keydown', (e) => {
+						if (e.key === 'Escape' && previewOverlay && !previewOverlay.classList.contains('hidden')) {
+							closePreviewModal();
+						}
+					});
+				}
+
+				$('preview-download').addEventListener('click', () => {
+					if (!currentPreviewInvoice) return;
+					const html = buildInvoiceHtml(currentPreviewInvoice, true);
+					const w = window.open('', '_blank');
+					w.document.write(html);
+					w.document.close();
+					closePreviewModal();
+				});
+				$('preview-open-tab').addEventListener('click', () => {
+					if (!currentPreviewInvoice) return;
+					const html = buildInvoiceHtml(currentPreviewInvoice, false);
+					const blob = new Blob([html], { type: 'text/html' });
+					window.open(URL.createObjectURL(blob), '_blank');
+				});
+				$('preview-edit').addEventListener('click', () => {
+					if (!currentPreviewInvoice) return;
+					try {
+						sessionStorage.setItem('jonesco-edit-invoice', JSON.stringify(currentPreviewInvoice));
+					} catch (e) {}
+					window.location.href = 'invoices.html?tab=create';
+				});
+				$('preview-new-from').addEventListener('click', () => {
+					if (!currentPreviewInvoice) return;
+					try {
+						sessionStorage.setItem('jonesco-new-from-invoice', JSON.stringify(currentPreviewInvoice));
+					} catch (e) {}
+					window.location.href = 'invoices.html?tab=create';
+				});
+				$('preview-delete').addEventListener('click', () => {
+					if (!currentPreviewInvoice) return;
+					if (!confirm(`Delete invoice "${currentPreviewInvoice.invoiceNumber}"?`)) return;
+					deleteInvoiceFromDB(currentPreviewInvoice.id).then(() => {
+						closePreviewModal();
+						showToast('Invoice deleted.');
+						refreshDashboard();
+					}).catch(() => {
+						showToast('Could not delete invoice.');
+					});
+				});
+
+				function refreshDashboard() {
+				getAllInvoices().then((all) => {
+					const now = new Date();
+					const thisYear = now.getFullYear();
+					const clients = new Set(all.map((inv) => (inv.client && inv.client.name && inv.client.name.trim()) || '').filter(Boolean));
+					const uniqueClients = clients.size;
+
+					const revenueByYear = {};
+					let totalRevenue = 0;
+					let revenueThisYear = 0;
+					for (const inv of all) {
+						const amt = inv.balanceDue != null ? inv.balanceDue : (inv.total != null ? inv.total : 0);
+						totalRevenue += amt;
+						const y = inv.date ? new Date(inv.date).getFullYear() : (inv.savedAt ? new Date(inv.savedAt).getFullYear() : null);
+						if (y) {
+							revenueByYear[y] = (revenueByYear[y] || 0) + amt;
+							if (y === thisYear) revenueThisYear += amt;
+						}
+					}
+
+					const chartEl = $('dashboard-revenue-chart');
+					if (chartEl) {
+						const years = Object.keys(revenueByYear).map(Number).sort((a, b) => b - a);
+						const maxRev = years.length ? Math.max(...years.map((y) => revenueByYear[y])) : 0;
+						if (years.length === 0) {
+							chartEl.innerHTML = '<div class="dashboard-revenue-chart-empty">No revenue data yet. Revenue is parsed from invoice details.</div>';
+						} else {
+							chartEl.innerHTML = '<div class="dashboard-revenue-chart-rows">' + years.map((y) => {
+								const val = revenueByYear[y];
+								const pct = maxRev > 0 ? (val / maxRev) * 100 : 0;
+								return '<div class="dashboard-revenue-chart-row"><span class="dashboard-revenue-chart-year">' + y + '</span><div class="dashboard-revenue-chart-bar-wrap"><div class="dashboard-revenue-chart-bar" style="width:' + pct + '%"></div></div><span class="dashboard-revenue-chart-value">' + formatCurrency(val) + '</span></div>';
+							}).join('') + '</div>';
+						}
+					}
+
+					$('kpi-total').textContent = all.length;
+					$('kpi-clients').textContent = uniqueClients;
+					$('kpi-revenue').textContent = formatCurrency(totalRevenue);
+					$('kpi-revenue-year').textContent = formatCurrency(revenueThisYear);
+
+					const sorted = [...all].sort((a, b) => {
+						const da = a.date || a.savedAt || '';
+						const db = b.date || b.savedAt || '';
+						return db.localeCompare(da);
+					});
+					const recent = sorted.slice(0, RECENT_COUNT);
+					const listEl = $('dashboard-recent-list');
+					const emptyEl = $('dashboard-recent-empty');
+					if (!listEl) return;
+					if (emptyEl) emptyEl.remove();
+					if (recent.length === 0) {
+						listEl.innerHTML = '<li class="dashboard-recent-empty" style="color: var(--muted); padding: 12px 0;">No saved invoices yet. <a href="invoices.html">Create one</a>.</li>';
+					} else {
+						const downloadSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+						const newFromSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+						const deleteSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>';
+						listEl.innerHTML = recent.map((inv) => {
+							const title = ((inv.invoiceNumber || '—') + (inv.summary ? ' — ' + inv.summary : '')).replace(/</g, '&lt;');
+							const client = (inv.client && inv.client.name || '—').replace(/</g, '&lt;');
+							const date = formatDate(inv.date || inv.savedAt);
+							const id = (inv.id != null) ? String(inv.id).replace(/"/g, '&quot;') : '';
+							return '<li class="dashboard-recent-row"><a href="#" class="dashboard-recent-item" data-id="' + id + '"><span class="dashboard-recent-num">' + title + '</span><span class="dashboard-recent-client">' + client + '</span><span class="dashboard-recent-date">' + date + '</span></a><div class="dashboard-recent-actions"><button type="button" class="icon-btn btn-download" data-id="' + id + '">' + downloadSvg + '<span class="tooltip">Download PDF</span></button><button type="button" class="icon-btn btn-new-from" data-id="' + id + '">' + newFromSvg + '<span class="tooltip">New from this</span></button><button type="button" class="icon-btn btn-delete" data-id="' + id + '">' + deleteSvg + '<span class="tooltip">Delete</span></button></div></li>';
+						}).join('');
+					}
+					// Link: navigate to invoice
+					listEl.querySelectorAll('.dashboard-recent-item[data-id]').forEach((a) => {
+						a.addEventListener('click', (e) => {
+							e.preventDefault();
+							const id = a.getAttribute('data-id');
+							if (!id) return;
+							window.location.href = 'invoices.html?open=' + encodeURIComponent(id);
+						});
+					});
+					// Icon actions: Download, New from, Delete
+					listEl.querySelectorAll('.btn-download[data-id]').forEach((btn) => {
+						btn.addEventListener('click', (e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							const id = btn.getAttribute('data-id');
+							if (!id) return;
+							getInvoiceById(id).then((inv) => {
+								if (inv) {
+									const html = buildInvoiceHtml(inv, true);
+									const w = window.open('', '_blank');
+									w.document.write(html);
+									w.document.close();
+								}
+							});
+						});
+					});
+					listEl.querySelectorAll('.btn-new-from[data-id]').forEach((btn) => {
+						btn.addEventListener('click', (e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							const id = btn.getAttribute('data-id');
+							if (!id) return;
+							getInvoiceById(id).then((inv) => {
+								if (inv) {
+									try { sessionStorage.setItem('jonesco-new-from-invoice', JSON.stringify(inv)); } catch (e2) {}
+									window.location.href = 'invoices.html?tab=create';
+								}
+							});
+						});
+					});
+					listEl.querySelectorAll('.btn-delete[data-id]').forEach((btn) => {
+						btn.addEventListener('click', (e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							const id = btn.getAttribute('data-id');
+							if (!id) return;
+							getInvoiceById(id).then((inv) => {
+								if (inv && confirm('Delete invoice "' + (inv.invoiceNumber || '') + '"?')) {
+									deleteInvoiceFromDB(id).then(() => {
+										showToast('Invoice deleted.');
+										refreshDashboard();
+									}).catch(() => showToast('Could not delete invoice.'));
+								}
+							});
+						});
+					});
+				}).catch(() => {
+					$('kpi-total').textContent = '0';
+					$('kpi-clients').textContent = '0';
+					$('kpi-revenue').textContent = '$0';
+					$('kpi-revenue-year').textContent = '$0';
+					const chartEl = $('dashboard-revenue-chart');
+					if (chartEl) chartEl.innerHTML = '<div class="dashboard-revenue-chart-empty">Could not load data.</div>';
+					const emptyEl = $('dashboard-recent-empty');
+					if (emptyEl) emptyEl.textContent = 'Could not load invoices.';
+				});
+				}
+
+				// Export / Import
+				$('btn-export')?.addEventListener('click', async () => {
+					try {
+						const invoices = await KillyAPI.getAllInvoices();
+						const blob = new Blob([JSON.stringify(invoices, null, 2)], { type: 'application/json' });
+						const a = document.createElement('a');
+						a.href = URL.createObjectURL(blob);
+						a.download = 'invoices.json';
+						a.click();
+						URL.revokeObjectURL(a.href);
+						showToast('Data exported.');
+					} catch (err) {
+						console.error(err);
+						showToast('Export failed.');
+					}
+				});
+				const importInput = $('import-file-input');
+				$('btn-import')?.addEventListener('click', () => {
+					if (importInput) importInput.click();
+				});
+				importInput?.addEventListener('change', async (e) => {
+					const file = e.target.files?.[0];
+					e.target.value = '';
+					if (!file) return;
+					try {
+						const text = await file.text();
+						const data = JSON.parse(text);
+						const invoices = Array.isArray(data) ? data : (data.invoices || []);
+						if (invoices.length === 0 && !Array.isArray(data)) {
+							showToast('No invoices in file.');
+							return;
+						}
+						await KillyAPI.importInvoices(invoices);
+						showToast('Imported ' + invoices.length + ' invoice(s).');
+						refreshDashboard();
+					} catch (err) {
+						console.error(err);
+						showToast('Import failed.');
+					}
+				});
+
+				refreshDashboard();
+			})();
+		</script>
+	</body>
+	</html>
+
+

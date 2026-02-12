@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: jonesco-invoice
+    env: node
+    plan: starter
+    region: oregon
+    buildCommand: npm ci && npm run build:server
+    startCommand: node dist/server/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TEMPLATE_PATH
+        sync: false
+
+
